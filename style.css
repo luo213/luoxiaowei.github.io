@@ -462,45 +462,10 @@ body.light-mode .skill-bar { background: rgba(0, 0, 0, 0.06); }
 .timeline .tl-time { color: var(--primary); font-size: 0.82em; font-weight: 600; }
 .timeline .tl-text { color: var(--text); font-size: 0.95em; }
 
-/* ---------- 留言板 ---------- */
-.message-form input, .message-form textarea {
-  width: 100%; padding: 12px 14px; margin-bottom: 12px;
-  border-radius: 10px; border: 1px solid var(--card-border);
-  background: rgba(255, 255, 255, 0.04); color: var(--text);
-  font-family: inherit; font-size: 0.93em; outline: none;
-  transition: border-color 0.25s, box-shadow 0.25s;
-}
-body.light-mode .message-form input, body.light-mode .message-form textarea { background: #fff; }
-.message-form input:focus, .message-form textarea:focus {
-  border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0, 209, 255, 0.15);
-}
-.message-form textarea { resize: vertical; min-height: 100px; }
-.message-list { margin-top: 18px; display: grid; gap: 12px; }
-.message-item {
-  display: flex; gap: 14px; padding: 16px;
-  border-radius: 12px; background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  animation: cardIn 0.4s var(--ease);
-}
-body.light-mode .message-item { background: rgba(0, 0, 0, 0.02); border-color: rgba(0, 0, 0, 0.05); }
-.message-avatar {
-  flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
-  background: var(--gradient); color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 15px;
-}
-.message-body { flex: 1; min-width: 0; }
-.message-body h4 { font-size: 0.98em; color: var(--text); display: flex; align-items: center; gap: 10px; }
-.message-body .message-time { font-size: 0.76em; color: var(--text-muted); font-weight: 400; }
-.message-body .message-content { margin-top: 6px; color: var(--text-muted); font-size: 0.92em; word-break: break-word; }
-.message-del {
-  align-self: flex-start; background: none; border: none; cursor: pointer;
-  color: var(--text-muted); font-size: 14px; opacity: 0; transition: all 0.25s;
-  padding: 4px 6px; border-radius: 6px;
-}
-.message-item:hover .message-del { opacity: 1; }
-.message-del:hover { color: #ff5c7a; background: rgba(255, 92, 122, 0.12); }
-#messageEmpty { text-align: center; color: var(--text-muted); font-size: 0.9em; padding: 18px 0; }
+/* ---------- 留言板（GitHub Issues / utterances） ---------- */
+#comments { margin-top: 8px; }
+#comments .section-note { margin: 8px 0; }
+#comments iframe { max-width: 100%; width: 100%; }
 
 /* ---------- 技术亮点 ---------- */
 .highlight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }

@@ -13,8 +13,8 @@
   <meta property="og:title" content="Xiaowei Luo - 嵌入式硬件工程师">
   <meta property="og:description" content="Xiaowei Luo 的个人简介及作品展示，专注嵌入式硬件研发、电源管理与工业通信。">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://yourdomain.com/">
-  <meta property="og:image" content="https://yourdomain.com/og-image.jpg">
+  <meta property="og:url" content="https://luo213.github.io/luoxiaowei.github.io/">
+  <meta property="og:image" content="https://luo213.github.io/luoxiaowei.github.io/icon-512.png">
   <!-- 结构化数据 -->
   <script type="application/ld+json">
   {
@@ -22,7 +22,7 @@
     "@type": "Person",
     "name": "Xiaowei Luo",
     "jobTitle": "电子工程师（研发）",
-    "url": "https://yourdomain.com/",
+    "url": "https://luo213.github.io/luoxiaowei.github.io/",
     "email": "mailto:lxw2247@gmail.com"
   }
   </script>
@@ -92,6 +92,7 @@
       </div>
       <div class="action-buttons">
         <a class="action-btn" href="mailto:lxw2247@gmail.com"><i class="fas fa-envelope"></i> 发送邮件</a>
+        <a class="action-btn ghost" href="https://mail.google.com/mail/?view=cm&fs=1&to=lxw2247@gmail.com" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> 网页版写信</a>
         <button class="action-btn ghost" type="button" data-copy="lxw2247@gmail.com"><i class="fas fa-copy"></i> 复制邮箱</button>
       </div>
     </header>
@@ -331,18 +332,13 @@
         </ul>
       </section>
 
-      <!-- 留言板 -->
+      <!-- 留言板（基于 GitHub Issues，留言保存到仓库 Issues） -->
       <section id="message" class="section reveal" tabindex="0">
         <h2 class="section-title">留言板</h2>
-        <p class="section-note">留言保存在本机浏览器中，刷新页面后仍然可见。</p>
-        <form class="message-form" id="messageForm" aria-label="留言板表单">
-          <input type="text" id="msgName" placeholder="姓名" required>
-          <input type="email" id="msgEmail" placeholder="邮箱（选填）">
-          <textarea id="msgContent" rows="4" placeholder="留言内容" required></textarea>
-          <button class="action-btn" type="submit"><i class="fas fa-paper-plane"></i> 提交留言</button>
-        </form>
-        <div id="messageEmpty">还没有留言，来抢沙发吧～</div>
-        <div id="messageList" class="message-list"></div>
+        <p class="section-note">留言将保存到本站 GitHub 仓库的 <strong>Issues</strong> 中，登录 GitHub 后即可在仓库 Issues 页面查看与回复。发表留言需使用 GitHub 账号授权（可自动防止垃圾留言），留言内容对访问者公开。</p>
+        <div id="comments">
+          <p class="section-note"><i class="fas fa-spinner fa-spin"></i> 留言板加载中…</p>
+        </div>
       </section>
 
       <!-- 技术亮点 -->
@@ -374,6 +370,7 @@
           <span class="contact-email"><i class="fas fa-envelope"></i>lxw2247@gmail.com</span>
           <div class="action-buttons">
             <a class="action-btn" href="mailto:lxw2247@gmail.com"><i class="fas fa-envelope"></i> 发送邮件</a>
+            <a class="action-btn ghost" href="https://mail.google.com/mail/?view=cm&fs=1&to=lxw2247@gmail.com" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> 网页版写信</a>
             <button class="action-btn ghost" type="button" data-copy="lxw2247@gmail.com"><i class="fas fa-copy"></i> 复制邮箱</button>
           </div>
         </div>

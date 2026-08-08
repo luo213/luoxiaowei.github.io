@@ -75,6 +75,49 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /* ---------- 留言板（GitHub Issues / utterances） ---------- */
+  const GITHUB_REPO = "luo213/luoxiaowei.github.io";
+  const commentsEl = $("#comments");
+  const commentsHint = $("#comments .section-note");
+
+  function utterancesTheme(theme) {
+    return theme === "light" ? "github-light" : "github-dark";
+  }
+  // 加载 utterances：访客留言将自动保存为仓库 Issues，登录 GitHub 即可查看
+  function loadComments(theme) {
+    if (!commentsEl) return;
+    const repo = GITHUB_REPO.trim();
+    if (!repo || repo.includes("your-")) {
+      commentsHint.innerHTML =
+        '<i class="fas fa-cog"></i> 留言板尚未配置：请在 main.js 顶部将 GITHUB_REPO 设置为你的 GitHub 公开仓库（如 "用户名/仓库名"），并在 GitHub 上安装 utterances App。';
+      return;
+    }
+    commentsEl.innerHTML = "";
+    const script = document.createElement("script");
+    script.src = "https://utteranc.es/client.js";
+    script.setAttribute("repo", repo);
+    script.setAttribute("issue-term", "pathname");
+    script.setAttribute("label", "留言");
+    script.setAttribute("theme", utterancesTheme(theme));
+    script.setAttribute("crossorigin", "anonymous");
+    script.async = true;
+    commentsEl.appendChild(script);
+  }
+  // 主题切换时同步留言板主题：优先通知 iframe，失败则重新加载
+  function syncCommentsTheme(theme) {
+    const frame = document.querySelector("iframe.utterances-frame");
+    if (frame) {
+      try {
+        frame.contentWindow.postMessage(
+          { type: "set-theme", theme: utterancesTheme(theme) },
+          "https://utteranc.es"
+        );
+        return;
+      } catch (e) { /* 继续走重新加载 */ }
+    }
+    loadComments(theme);
+  }
+
   /* ---------- 主题切换 ---------- */
   const themeToggle = $("#themeToggle");
   const themeIcon = $("#themeIcon");
@@ -82,6 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.classList.toggle("light-mode", theme === "light");
     themeIcon.className = theme === "light" ? "fas fa-sun" : "fas fa-moon";
     if (save) localStorage.setItem("theme", theme);
+    syncCommentsTheme(theme);
   }
   // 首次访问跟随系统偏好
   const savedTheme = localStorage.getItem("theme");
@@ -181,6 +225,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  /* ---------- 发送邮件：提示并尝试打开邮件客户端 ---------- */
+  // mailto 依赖本机邮件客户端，未关联时点击无反应，给出提示并引导备用方式
+  $$('a[href^="mailto:"]').forEach(link => {
+    link.addEventListener("click", () => {
+      showToast("正在尝试打开邮件客户端…若未弹出，请用“网页版写信”或复制邮箱", "info");
+    });
+  });
+
   /* ---------- 滚动渐入 ---------- */
   const revealObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
@@ -224,78 +276,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }, { threshold: 0.4 });
   $$(".skill-bar .fill").forEach(fill => skillObserver.observe(fill));
-
-  /* ---------- 留言板 ---------- */
-  const STORAGE_KEY = "messages";
-  const messageList = $("#messageList");
-  const messageEmpty = $("#messageEmpty");
-
-  function getMessages() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-    catch (e) { return []; }
-  }
-  function saveMessages(messages) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-  }
-  function formatTime(iso) {
-    try {
-      return new Date(iso).toLocaleString("zh-CN", {
-        month: "2-digit", day: "2-digit",
-        hour: "2-digit", minute: "2-digit"
-      });
-    } catch (e) { return ""; }
-  }
-  function renderMessages() {
-    const messages = getMessages();
-    messageEmpty.style.display = messages.length ? "none" : "block";
-    messageList.innerHTML = "";
-    messages.slice(0, 20).forEach((item, idx) => {
-      const wrap = document.createElement("div");
-      wrap.className = "message-item";
-      const initial = escapeHtml((item.name || "访客").trim().charAt(0).toUpperCase());
-      wrap.innerHTML = `
-        <div class="message-avatar">${initial}</div>
-        <div class="message-body">
-          <h4>${escapeHtml(item.name)}
-            <span class="message-time">${formatTime(item.timestamp)}</span>
-          </h4>
-          <div class="message-content">${escapeHtml(item.content)}</div>
-        </div>
-        <button class="message-del" data-idx="${idx}" aria-label="删除留言" title="删除">
-          <i class="fas fa-trash-alt"></i>
-        </button>`;
-      messageList.appendChild(wrap);
-    });
-    $$(".message-del", messageList).forEach(btn => {
-      btn.addEventListener("click", () => {
-        const messages = getMessages();
-        const realIdx = parseInt(btn.dataset.idx, 10);
-        // 列表是倒序渲染（最新在前），需映射回存储下标
-        const storeIdx = messages.length - 1 - realIdx;
-        messages.splice(storeIdx, 1);
-        saveMessages(messages);
-        renderMessages();
-        showToast("留言已删除", "info");
-      });
-    });
-  }
-  renderMessages();
-
-  $("#messageForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const name = $("#msgName").value.trim();
-    const content = $("#msgContent").value.trim();
-    if (!name || !content) {
-      showToast("请填写姓名和留言内容", "error");
-      return;
-    }
-    const messages = getMessages();
-    messages.push({ name, email: $("#msgEmail").value, content, timestamp: new Date().toISOString() });
-    saveMessages(messages);
-    renderMessages();
-    this.reset();
-    showToast("留言已保存（本机浏览器）");
-  });
 
   /* ---------- 项目模态框 ---------- */
   const modal = $("#projectModal");
