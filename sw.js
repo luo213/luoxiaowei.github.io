@@ -2,16 +2,21 @@
    Xiaowei Luo 个人网站 - Service Worker
    策略：预缓存核心资源，运行时网络优先、离线回退缓存
    ========================================================================== */
-const CACHE_NAME = "xiaowei-site-v2";
+const CACHE_NAME = "xiaowei-site-v4";
 const CORE_ASSETS = [
   "./",
   "./index.html",
   "./style.css",
   "./main.js",
+  "./content.js",
   "./favicon.svg",
   "./manifest.webmanifest",
   "./icon-192.png",
-  "./icon-512.png"
+  "./icon-512.png",
+  "./og-image.png",
+  "./robots.txt",
+  "./sitemap.xml",
+  "./404.html"
 ];
 
 self.addEventListener("install", (event) => {

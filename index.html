@@ -3,18 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Xiaowei Luo 的个人简介与项目展示，嵌入式硬件工程师，聚焦矿用电子设备、电源管理、传感器与工业通信研发。">
+  <meta name="description" id="metaDesc" content="Xiaowei Luo 的个人简介与项目展示，嵌入式硬件工程师，聚焦矿用电子设备、电源管理、传感器与工业通信研发。">
   <meta name="theme-color" content="#05070d">
   <title>Xiaowei Luo - 嵌入式硬件工程师</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="manifest" href="manifest.webmanifest">
-  <!-- Open Graph 标签（部署后请将 URL 替换为实际域名） -->
+  <link rel="canonical" href="https://luo213.github.io/luoxiaowei.github.io/">
+  <!-- 预连接 CDN，加速外部资源加载 -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://utteranc.es">
+  <!-- Open Graph 标签 -->
   <meta property="og:title" content="Xiaowei Luo - 嵌入式硬件工程师">
   <meta property="og:description" content="Xiaowei Luo 的个人简介及作品展示，专注嵌入式硬件研发、电源管理与工业通信。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://luo213.github.io/luoxiaowei.github.io/">
-  <meta property="og:image" content="https://luo213.github.io/luoxiaowei.github.io/icon-512.png">
+  <meta property="og:image" content="https://luo213.github.io/luoxiaowei.github.io/og-image.png">
   <!-- 结构化数据 -->
   <script type="application/ld+json">
   {
@@ -27,7 +32,7 @@
   }
   </script>
   <!-- 引入Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pzrZ8qCCT/K6pTOHjdEWJyV7b8frv/Jx43oyss3xLcmJY1hl+X8vXj3P8V/7hfR6Z3/5M5O9I6FSl0V0b+e6g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <!-- 引入particles.js -->
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js" defer></script>
   <!-- 站点样式 -->
@@ -54,21 +59,22 @@
       <span>Xiaowei Luo</span>
     </a>
     <ul class="nav-links">
-      <li><a href="#overview" class="nav-link active">能力概览</a></li>
-      <li><a href="#basicInfo" class="nav-link">基本信息</a></li>
-      <li><a href="#work" class="nav-link">工作经历</a></li>
-      <li><a href="#projects" class="nav-link">项目经历</a></li>
-      <li><a href="#skills" class="nav-link">核心技能</a></li>
-      <li><a href="#timeline" class="nav-link">时间轴</a></li>
-      <li><a href="#message" class="nav-link">留言板</a></li>
-      <li><a href="#blog" class="nav-link">技术亮点</a></li>
-      <li><a href="#contact" class="nav-link">联系方式</a></li>
+      <li><a href="#overview" class="nav-link active" data-i18n="navOverview">能力概览</a></li>
+      <li><a href="#basicInfo" class="nav-link" data-i18n="navBasic">基本信息</a></li>
+      <li><a href="#work" class="nav-link" data-i18n="navWork">工作经历</a></li>
+      <li><a href="#projects" class="nav-link" data-i18n="navProjects">项目经历</a></li>
+      <li><a href="#skills" class="nav-link" data-i18n="navSkills">核心技能</a></li>
+      <li><a href="#timeline" class="nav-link" data-i18n="navTimeline">时间轴</a></li>
+      <li><a href="#message" class="nav-link" data-i18n="navMessage">留言板</a></li>
+      <li><a href="#highlights" class="nav-link" data-i18n="navHighlights">技术亮点</a></li>
+      <li><a href="#contact" class="nav-link" data-i18n="navContact">联系方式</a></li>
     </ul>
     <div class="nav-actions">
-      <button class="icon-btn" id="themeToggle" aria-label="切换主题" title="切换主题">
+      <button class="icon-btn lang-btn" id="langToggle" type="button" data-i18n-aria="ariaLang" title="EN">EN</button>
+      <button class="icon-btn" id="themeToggle" type="button" data-i18n-aria="ariaTheme">
         <i class="fas fa-moon" id="themeIcon"></i>
       </button>
-      <button class="icon-btn" id="hamburger" aria-label="打开菜单" title="菜单">
+      <button class="icon-btn" id="hamburger" type="button" aria-expanded="false" data-i18n-aria="ariaMenuOpen">
         <i class="fas fa-bars"></i>
       </button>
     </div>
@@ -80,7 +86,7 @@
     <header class="hero reveal visible">
       <h1>Xiaowei Luo</h1>
       <p class="hero-subtitle">
-        <span id="typedText"></span><span class="typed-cursor">|</span>
+        <span id="typedText">嵌入式硬件工程师 ｜ Embedded Hardware Engineer</span><span class="typed-cursor">|</span>
       </p>
       <div class="hero-tags">
         <span class="tag">STM32</span>
@@ -88,302 +94,140 @@
         <span class="tag">Modbus RTU/TCP</span>
         <span class="tag">RS485</span>
         <span class="tag">LVGL</span>
-        <span class="tag">防爆标准</span>
+        <span class="tag" data-i18n="heroTagExplosion">防爆标准</span>
       </div>
       <div class="action-buttons">
-        <a class="action-btn" href="mailto:lxw2247@gmail.com"><i class="fas fa-envelope"></i> 发送邮件</a>
-        <a class="action-btn ghost" href="https://mail.google.com/mail/?view=cm&fs=1&to=lxw2247@gmail.com" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> 网页版写信</a>
-        <button class="action-btn ghost" type="button" data-copy="lxw2247@gmail.com"><i class="fas fa-copy"></i> 复制邮箱</button>
+        <a class="action-btn" href="mailto:lxw2247@gmail.com"><i class="fas fa-envelope"></i> <span data-i18n="sendMail">发送邮件</span></a>
+        <a class="action-btn ghost" href="https://mail.google.com/mail/?view=cm&fs=1&to=lxw2247@gmail.com" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> <span data-i18n="webMail">网页版写信</span></a>
+        <button class="action-btn ghost" type="button" data-copy="lxw2247@gmail.com"><i class="fas fa-copy"></i> <span data-i18n="copyEmail">复制邮箱</span></button>
+        <button class="action-btn ghost" type="button" data-print><i class="fas fa-print"></i> <span data-i18n="printResume">打印简历</span></button>
       </div>
     </header>
 
     <main>
       <!-- 能力概览 -->
       <section id="overview" class="section reveal" tabindex="0">
-        <h2 class="section-title">能力概览</h2>
-        <p class="overview-text">专注矿用设备与工业现场应用研发，覆盖硬件设计、嵌入式开发与系统联调，重视可靠性与工程化落地。</p>
-        <ul class="advantage-list">
-          <li><span class="adv-icon"><i class="fas fa-microchip"></i></span>具备矿用电子设备独立开发经验，从需求分析到量产全流程主导，实现产品技术突破与落地应用。</li>
-          <li><span class="adv-icon"><i class="fas fa-code"></i></span>熟练掌握 STM32 / STC 单片机嵌入式开发，擅长硬件电路设计与 PCB 布局。</li>
-          <li><span class="adv-icon"><i class="fas fa-shield-halved"></i></span>深入理解煤矿防爆标准与安全认证流程，具备从技术方案到认证文档的全周期项目管理能力。</li>
-          <li><span class="adv-icon"><i class="fas fa-network-wired"></i></span>精通 Modbus 等工业通信协议与多传感器集成。</li>
-        </ul>
-        <div class="stat-grid">
-          <div class="stat-card">
-            <div class="stat-value" data-count="3" data-suffix="年">0年</div>
-            <div class="stat-label">硬件与嵌入式研发经验</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" data-count="10" data-suffix="+">0+</div>
-            <div class="stat-label">矿用设备与系统项目</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">全流程</div>
-            <div class="stat-label">原理图、PCB、联调与优化</div>
-          </div>
-        </div>
+        <h2 class="section-title" data-i18n="overviewTitle">能力概览</h2>
+        <p class="overview-text" data-i18n="overviewText">专注矿用设备与工业现场应用研发，覆盖硬件设计、嵌入式开发与系统联调，重视可靠性与工程化落地。</p>
+        <ul class="advantage-list" id="advList"></ul>
+        <div class="stat-grid" id="statsRender"></div>
       </section>
 
       <!-- 基本信息 -->
       <section id="basicInfo" class="section reveal" tabindex="0">
-        <h2 class="section-title">基本信息</h2>
+        <h2 class="section-title" data-i18n="basicTitle">基本信息</h2>
         <div class="info-grid">
-          <div class="info-item"><i class="fas fa-user"></i><strong>姓名：</strong>Xiaowei Luo</div>
-          <div class="info-item"><i class="fas fa-briefcase"></i><strong>工作经验：</strong>3 年</div>
-          <div class="info-item"><i class="fas fa-microchip"></i><strong>技术方向：</strong>嵌入式硬件研发</div>
-          <div class="info-item"><i class="fas fa-envelope"></i><strong>邮箱：</strong><a href="mailto:lxw2247@gmail.com">lxw2247@gmail.com</a></div>
+          <div class="info-item"><i class="fas fa-user"></i><strong data-i18n="basicName">姓名：</strong><span>Xiaowei Luo</span></div>
+          <div class="info-item"><i class="fas fa-briefcase"></i><strong data-i18n="basicExp">工作经验：</strong><span data-i18n="basicExpVal">3 年</span></div>
+          <div class="info-item"><i class="fas fa-microchip"></i><strong data-i18n="basicField">技术方向：</strong><span data-i18n="basicFieldVal">嵌入式硬件研发</span></div>
+          <div class="info-item"><i class="fas fa-envelope"></i><strong data-i18n="basicEmail">邮箱：</strong><a href="mailto:lxw2247@gmail.com">lxw2247@gmail.com</a></div>
         </div>
       </section>
 
       <!-- 工作经历 -->
       <section id="work" class="section reveal" tabindex="0">
-        <h2 class="section-title">工作经历</h2>
-        <div class="work-grid">
-          <div class="work-card">
-            <h3>Industrial Electronics Company</h3>
-            <div class="work-meta"><i class="fas fa-calendar-alt"></i>2023.06 - 2024.08 ｜ 电子工程师（研发）</div>
-            <ul>
-              <li>参与煤矿设备新产品全流程开发：需求调研、方案设计评估、功能实现及样机测试优化</li>
-              <li>负责硬件功能模块设计与实现，参与制定技术方案并进行可行性评估</li>
-              <li>执行产品样机功能测试与性能优化，跟踪生产协作并持续改进产品性能</li>
-              <li>完成工艺文件编制、BOM 清单整理及硬件元器件选型工作</li>
-              <li>协助完成煤矿安全认证（煤安认证）送审材料的准备与对接</li>
-            </ul>
-          </div>
-          <div class="work-card">
-            <h3>Industrial IoT Technology Company</h3>
-            <div class="work-meta"><i class="fas fa-calendar-alt"></i>2024.08 - 至今 ｜ 电子工程师（研发）</div>
-            <ul>
-              <li>参与新产品调研与技术方案制定，核心功能设计与实现，完成样机测试与多轮优化迭代</li>
-              <li>主导产品测试流程优化与生产协作，建立标准化测试文档，跟踪产品问题并推动改进</li>
-              <li>负责工艺文件编制、BOM 清单整理及硬件元器件选型，关注物料成本控制与供应稳定性</li>
-              <li>深度参与煤矿安全认证（煤安认证）送审工作，协助整理技术文档并通过审核</li>
-            </ul>
-          </div>
-        </div>
+        <h2 class="section-title" data-i18n="workTitle">工作经历</h2>
+        <div class="work-grid" id="workRender"></div>
       </section>
 
       <!-- 项目经历 -->
       <section id="projects" class="section reveal" tabindex="0">
-        <h2 class="section-title">项目经历</h2>
+        <h2 class="section-title" data-i18n="projectsTitle">项目经历</h2>
         <div class="project-filter">
-          <button class="filter-btn active" data-filter="all">全部</button>
-          <button class="filter-btn" data-filter="传感器">传感器</button>
-          <button class="filter-btn" data-filter="摄像仪">摄像仪</button>
-          <button class="filter-btn" data-filter="控制器">控制器</button>
-          <button class="filter-btn" data-filter="报警器">报警器</button>
-          <button class="filter-btn" data-filter="电源">电源</button>
+          <button class="filter-btn active" data-filter="all" data-i18n="filterAll">全部</button>
+          <button class="filter-btn" data-filter="sensor" data-i18n="filterSensor">传感器</button>
+          <button class="filter-btn" data-filter="camera" data-i18n="filterCamera">摄像仪</button>
+          <button class="filter-btn" data-filter="controller" data-i18n="filterController">控制器</button>
+          <button class="filter-btn" data-filter="alarm" data-i18n="filterAlarm">报警器</button>
+          <button class="filter-btn" data-filter="power" data-i18n="filterPower">电源</button>
         </div>
         <div class="project-toolbar">
           <div class="search-wrap">
             <i class="fas fa-search"></i>
-            <input id="projectSearch" class="project-search" type="text" placeholder="搜索项目关键词，如：RS485、光纤、Modbus">
+            <input id="projectSearch" class="project-search" type="text" data-i18n-placeholder="projectSearchPh" placeholder="搜索项目关键词，如：RS485、光纤、Modbus">
           </div>
           <label class="project-toggle">
             <input id="roleToggle" type="checkbox">
-            只看独立开发
+            <span data-i18n="projectSoloOnly">只看独立开发</span>
           </label>
         </div>
-        <div class="project-container">
-          <div class="project-card" role="button" tabindex="0" data-category="电源" data-role="独立开发" data-title="矿用双路12V/18V浇封电源" data-detail="独立负责矿用双路12V/18V浇封电源的硬件与嵌入式系统开发。基于STC12与CN3765充电管理芯片设计磷酸铁锂电池充放电管理电路，实现过充、过放、短路等多重保护机制。通过RS485+Modbus RTU与上位机通信，支持远程实时读取电压、电流等关键参数及输入输出通断控制。独立完成原理图设计、PCB布局布线及单片机固件开发，产品通过相关测试，满足矿用浇封防爆标准。">
-            <span class="project-badge">独立开发</span>
-            <h3>矿用双路12V/18V浇封电源</h3>
-            <ul>
-              <li>STC12 + CN3765</li>
-              <li>RS485 + Modbus RTU</li>
-            </ul>
-            <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
-          </div>
-          <div class="project-card" role="button" tabindex="0" data-category="摄像仪" data-role="硬件设计" data-title="红外测温摄像仪（防爆改造）" data-detail="针对双光谱摄像仪方案重新设计电源模块，优化电路布局与元器件选型，满足GB3836防爆标准，确保在易燃易爆环境中安全稳定运行。协同结构工程师完成防爆外壳的机械设计与密封方案，为产品送审认证提供全流程技术支持，最终协助产品通过防爆认证检测。">
-            <span class="project-badge">技术支持</span>
-            <h3>红外测温摄像仪（防爆改造）</h3>
-            <ul>
-              <li>电源模块重构</li>
-              <li>GB3836防爆标准</li>
-            </ul>
-            <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
-          </div>
-          <div class="project-card" role="button" tabindex="0" data-category="摄像仪" data-role="独立设计" data-title="无线对讲摄像仪" data-detail="针对传统摄像仪布线复杂的问题，基于摄像仪机芯与无线AP独立完成无线传输改造方案。独立设计转接电路板及嵌入式软件，实现机芯数据的协议转换与处理，扩展功放、麦克风、灯光控制与雨刷控制等外围功能，提升产品集成度与实用性。">
-            <span class="project-badge">独立设计</span>
-            <h3>无线对讲摄像仪</h3>
-            <ul>
-              <li>无线传输改造</li>
-              <li>协议转换与外设扩展</li>
-            </ul>
-            <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
-          </div>
-          <div class="project-card" role="button" tabindex="0" data-category="摄像仪" data-role="独立设计" data-title="矿用本安型光纤摄像仪（微型）" data-detail="独立设计微型光纤数据转接板，实现机芯数据通过光纤传输至交换机，支持高清视频远距离稳定传输。开发嵌入式控制程序，基于Pelco-D协议接收并解析后台指令，精准控制灯光、雨刷等矿用外设。集成音频功能模块，内置功放与麦克风电路，实现对讲与实时音频监控。">
-            <span class="project-badge">独立设计</span>
-            <h3>矿用本安型光纤摄像仪（微型）</h3>
-            <ul>
-              <li>光纤远传</li>
-              <li>Pelco-D控制</li>
-            </ul>
-            <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
-          </div>
-          <div class="project-card" role="button" tabindex="0" data-category="传感器" data-role="独立开发" data-title="矿用设备启停传感器" data-detail="针对矿用设备运行状态监测需求，独立完成纯硬件传感器开发。基于电磁感应原理，通过线圈感应设备电缆电流变化，经放大比较电路处理感应信号；实现阈值可调的比较器设计，电流超过设定值时触发LED报警并输出无源开关量信号。结构紧凑、抗干扰能力强。">
-            <span class="project-badge">独立开发</span>
-            <h3>矿用设备启停传感器</h3>
-            <ul>
-              <li>电磁感应检测</li>
-              <li>阈值可调报警</li>
-            </ul>
-            <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
-          </div>
-          <div class="project-card" role="button" tabindex="0" data-category="传感器" data-role="独立开发" data-title="电极式堆煤传感器" data-detail="独立设计并实现基于电阻检测原理的电极式堆煤传感器，通过监测电极与接地线间的阻值变化判断煤堆堆积状态，阻值低于预设阈值时触发开关量报警信号，实现对堆煤事故的实时预警。开发适用于恶劣环境的检测电路，重点优化抗干扰性与稳定性，完成原型制作与功能验证。">
-            <span class="project-badge">独立开发</span>
-            <h3>电极式堆煤传感器</h3>
-            <ul>
-              <li>电阻变化检测</li>
-              <li>开关量报警输出</li>
-            </ul>
-            <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
-          </div>
-          <div class="project-card" role="button" tabindex="0" data-category="控制器" data-role="硬件&嵌入式" data-title="矿用电源控制器" data-detail="基于STM32F103与HLW8032电能计量芯片，设计并实现多路交流电压、电流的实时采集电路，通过继电器完成精准的通道通断控制。独立开发LCD显示模块，实时展示电压、电流、功率等关键电参数。支持Modbus RTU/TCP双协议远程监控，集成本地按键、PLC远程指令与上位机软件三种控制方式；通过软件滤波算法提升计量精度与抗干扰能力。">
-            <span class="project-badge">硬件&嵌入式</span>
-            <h3>矿用电源控制器</h3>
-            <ul>
-              <li>多路计量与控制</li>
-              <li>Modbus RTU/TCP</li>
-            </ul>
-            <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
-          </div>
-          <div class="project-card" role="button" tabindex="0" data-category="摄像仪" data-role="硬件设计" data-title="图像处理摄像仪（音频增强）" data-detail="在摄像仪方案基础上增加大功率功放电路并集成扬声器，实现远距离音频播放，满足井下语音对讲及报警需求。负责摄像仪硬件选型评估，完成功放模块的电路原理设计与PCB布局，严格遵循矿用本安防爆标准进行电路安全设计，通过隔离、限流等措施确保易燃易爆环境下的安全运行。">
-            <span class="project-badge">硬件设计</span>
-            <h3>图像处理摄像仪（音频增强）</h3>
-            <ul>
-              <li>功放与扬声器集成</li>
-              <li>本安防爆要求</li>
-            </ul>
-            <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
-          </div>
-          <div class="project-card" role="button" tabindex="0" data-category="报警器" data-role="独立开发" data-title="声光报警器" data-detail="设计基于开关量触发的声光报警系统，接收外部开关量输入信号后触发语音播放模块预存音频报警，并驱动红绿LED交替闪烁，实现声光双重报警指示。独立完成核心器件选型、电路原理图设计与PCB布局布线，通过数字逻辑电路控制语音芯片与LED驱动模块协同工作，开发出体积小巧、响应灵敏的报警装置。">
-            <span class="project-badge">独立开发</span>
-            <h3>声光报警器</h3>
-            <ul>
-              <li>语音播放+灯光报警</li>
-              <li>紧凑可靠结构</li>
-            </ul>
-            <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
-          </div>
-          <div class="project-card" role="button" tabindex="0" data-category="传感器" data-role="独立开发" data-title="多参气体传感器" data-detail="基于STM32主控，集成催化燃烧、电化学等专用气体传感器，实现多类型气体浓度采集、实时显示与阈值报警。独立设计信号调理电路，优化传感器信号采集质量，通过数据校准算法提升测量精度。支持RS485通信协议输出数据，可直接接入矿井监控系统，实现远程监测与告警联动。">
-            <span class="project-badge">独立开发</span>
-            <h3>多参气体传感器</h3>
-            <ul>
-              <li>多气体采集与报警</li>
-              <li>RS485数据输出</li>
-            </ul>
-            <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
-          </div>
-          <div class="project-card" role="button" tabindex="0" data-category="电源" data-role="独立开发" data-title="自适应锂电池充放电管理系统" data-detail="基于STM32主控与CN3765电源管理芯片设计充放电电路，实现2~7节锂电池上电自动识别与参数自适应匹配。采用FATFS文件系统管理存储，记录电压、电流及设备状态数据，支持USB导出数据文件便于追溯分析。基于LVGL开发嵌入式GUI界面，实时显示电源参数并支持阈值配置；集成Modbus RTU/TCP协议实现远程监控与报警功能。">
-            <span class="project-badge">独立开发</span>
-            <h3>自适应锂电池充放电管理系统</h3>
-            <ul>
-              <li>自动识别电池节数</li>
-              <li>FATFS+LVGL</li>
-            </ul>
-            <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
-          </div>
-        </div>
+        <div class="project-container" id="projectRender"></div>
         <div id="projectEmpty">
           <i class="fas fa-search"></i>
-          <p>没有找到匹配的项目，换个关键词试试</p>
+          <p data-i18n="projectEmpty">没有找到匹配的项目，换个关键词试试</p>
         </div>
       </section>
 
       <!-- 核心技能 -->
       <section id="skills" class="section reveal" tabindex="0">
-        <h2 class="section-title">核心技能</h2>
-        <div class="skill-list">
-          <div class="skill-item">
-            <div class="skill-head"><strong>嵌入式开发（STM32 / STC12 / Modbus / RS485 / Pelco-D）</strong><span>95%</span></div>
-            <div class="skill-bar"><div class="fill" data-level="95"></div></div>
-          </div>
-          <div class="skill-item">
-            <div class="skill-head"><strong>硬件设计（原理图 / PCB / 器件选型 / BOM）</strong><span>92%</span></div>
-            <div class="skill-bar"><div class="fill" data-level="92"></div></div>
-          </div>
-          <div class="skill-item">
-            <div class="skill-head"><strong>系统联调（样机测试 / 生产协作 / 认证对接）</strong><span>88%</span></div>
-            <div class="skill-bar"><div class="fill" data-level="88"></div></div>
-          </div>
-          <div class="skill-item">
-            <div class="skill-head"><strong>软件能力（FATFS / LVGL / LCD 交互）</strong><span>85%</span></div>
-            <div class="skill-bar"><div class="fill" data-level="85"></div></div>
-          </div>
-        </div>
-        <div class="skill-tags">
-          <span class="tag">Altium Designer</span>
-          <span class="tag">Keil</span>
-          <span class="tag">STM32CubeMX</span>
-          <span class="tag">J-Link</span>
-          <span class="tag">示波器/万用表</span>
-        </div>
+        <h2 class="section-title" data-i18n="skillsTitle">核心技能</h2>
+        <div class="skill-list" id="skillsRender"></div>
+        <div class="skill-tags" id="skillTagsRender"></div>
       </section>
 
       <!-- 时间轴 -->
       <section id="timeline" class="section reveal" tabindex="0">
-        <h2 class="section-title">工作与项目时间轴</h2>
-        <ul class="timeline">
-          <li><span class="tl-time">2019 - 2023</span><br><span class="tl-text">电子科学与技术专业，本科。</span></li>
-          <li><span class="tl-time">2023.06 - 2024.08</span><br><span class="tl-text">Industrial Electronics Company，电子工程师（研发）。</span></li>
-          <li><span class="tl-time">2024.08 - 至今</span><br><span class="tl-text">Industrial IoT Technology Company，电子工程师（研发）。</span></li>
-          <li><span class="tl-time">2023 - 至今</span><br><span class="tl-text">完成矿用电源、传感器、摄像仪、控制器与报警器等 10+ 个项目交付。</span></li>
-        </ul>
+        <h2 class="section-title" data-i18n="timelineTitle">工作与项目时间轴</h2>
+        <ul class="timeline" id="timelineRender"></ul>
       </section>
 
       <!-- 留言板（基于 GitHub Issues，留言保存到仓库 Issues） -->
       <section id="message" class="section reveal" tabindex="0">
-        <h2 class="section-title">留言板</h2>
+        <h2 class="section-title" data-i18n="messageTitle">留言板</h2>
         <div id="comments"></div>
       </section>
 
       <!-- 技术亮点 -->
-      <section id="blog" class="section reveal" tabindex="0">
-        <h2 class="section-title">技术亮点</h2>
+      <section id="highlights" class="section reveal" tabindex="0">
+        <h2 class="section-title" data-i18n="highlightsTitle">技术亮点</h2>
         <div class="highlight-grid">
           <div class="highlight-card">
             <i class="fas fa-shield-halved"></i>
-            <h3>防爆标准适配</h3>
-            <p>具备 GB3836 防爆要求的电源改造与结构协同经验，覆盖从方案到认证文档的全流程。</p>
+            <h3 data-i18n="hl1Title">防爆标准适配</h3>
+            <p data-i18n="hl1Desc">具备 GB3836 防爆要求的电源改造与结构协同经验，覆盖从方案到认证文档的全流程。</p>
           </div>
           <div class="highlight-card">
             <i class="fas fa-network-wired"></i>
-            <h3>远程监控与通信</h3>
-            <p>在多项目中集成 RS485 与 Modbus RTU/TCP，支持远程读取与控制。</p>
+            <h3 data-i18n="hl2Title">远程监控与通信</h3>
+            <p data-i18n="hl2Desc">在多项目中集成 RS485 与 Modbus RTU/TCP，支持远程读取与控制。</p>
           </div>
           <div class="highlight-card">
             <i class="fas fa-database"></i>
-            <h3>数据记录与UI</h3>
-            <p>通过 FATFS 记录运行数据，使用 LVGL 实现电源参数可视化与阈值配置。</p>
+            <h3 data-i18n="hl3Title">数据记录与UI</h3>
+            <p data-i18n="hl3Desc">通过 FATFS 记录运行数据，使用 LVGL 实现电源参数可视化与阈值配置。</p>
           </div>
         </div>
       </section>
 
       <!-- 联系方式 -->
       <section id="contact" class="section reveal" tabindex="0">
-        <h2 class="section-title">联系方式</h2>
+        <h2 class="section-title" data-i18n="contactTitle">联系方式</h2>
         <div class="contact-box">
           <span class="contact-email"><i class="fas fa-envelope"></i>lxw2247@gmail.com</span>
           <div class="action-buttons">
-            <a class="action-btn" href="mailto:lxw2247@gmail.com"><i class="fas fa-envelope"></i> 发送邮件</a>
-            <a class="action-btn ghost" href="https://mail.google.com/mail/?view=cm&fs=1&to=lxw2247@gmail.com" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> 网页版写信</a>
-            <button class="action-btn ghost" type="button" data-copy="lxw2247@gmail.com"><i class="fas fa-copy"></i> 复制邮箱</button>
+            <a class="action-btn" href="mailto:lxw2247@gmail.com"><i class="fas fa-envelope"></i> <span data-i18n="sendMail">发送邮件</span></a>
+            <a class="action-btn ghost" href="https://mail.google.com/mail/?view=cm&fs=1&to=lxw2247@gmail.com" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> <span data-i18n="webMail">网页版写信</span></a>
+            <button class="action-btn ghost" type="button" data-copy="lxw2247@gmail.com"><i class="fas fa-copy"></i> <span data-i18n="copyEmail">复制邮箱</span></button>
+            <button class="action-btn ghost" type="button" data-print><i class="fas fa-print"></i> <span data-i18n="printResume">打印简历</span></button>
           </div>
         </div>
       </section>
     </main>
 
     <footer tabindex="0">
-      <p>&copy; 2026 Xiaowei Luo. 保留所有权利。</p>
-      <p class="footer-line">Built with <i class="fas fa-heart" style="color:#ff5c7a;"></i> · 嵌入式硬件工程师的个人网站</p>
+      <p data-i18n="footerCopyright">© 2026 Xiaowei Luo. 保留所有权利。</p>
+      <p class="footer-links">
+        <a href="https://github.com/luo213" target="_blank" rel="noopener" aria-label="GitHub 主页"><i class="fab fa-github"></i> GitHub</a>
+        <a href="mailto:lxw2247@gmail.com"><i class="fas fa-envelope"></i> lxw2247@gmail.com</a>
+      </p>
+      <p class="footer-line" data-i18n="footerLine">Built with <i class="fas fa-heart" style="color:#ff5c7a;"></i> · 嵌入式硬件工程师的个人网站</p>
     </footer>
   </div>
 
   <!-- 项目详情模态框 -->
   <div id="projectModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-hidden="true" tabindex="-1">
     <div class="modal-content">
-      <button class="modal-close" id="modalClose" aria-label="关闭模态框" tabindex="0"><i class="fas fa-times"></i></button>
+      <button class="modal-close" id="modalClose" tabindex="0" data-i18n-aria="ariaCloseModal"><i class="fas fa-times"></i></button>
       <h2 id="modal-title"></h2>
       <div id="modal-tags"></div>
       <p id="modal-detail"></p>
@@ -391,7 +235,7 @@
   </div>
 
   <!-- 回到顶部 -->
-  <button id="backToTop" aria-label="回到顶部"><i class="fas fa-chevron-up"></i></button>
+  <button id="backToTop" type="button" data-i18n-aria="ariaBackTop"><i class="fas fa-chevron-up"></i></button>
 
   <!-- Toast 提示 -->
   <div id="toastWrap" aria-live="polite"></div>
@@ -402,8 +246,10 @@
       .reveal { opacity: 1 !important; transform: none !important; }
       #preloader { display: none !important; }
     </style>
+    <p style="text-align:center;padding:12px;color:#8ba3b8;">请启用 JavaScript 以查看完整内容 / Please enable JavaScript for full content.</p>
   </noscript>
-  <!-- 站点脚本 -->
+  <!-- 站点脚本（先内容数据，后交互逻辑） -->
+  <script src="content.js" defer></script>
   <script src="main.js" defer></script>
 </body>
 </html>

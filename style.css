@@ -158,17 +158,38 @@ nav.scrolled {
 .nav-links a.active { color: var(--primary); }
 
 .nav-actions { display: flex; align-items: center; gap: 8px; }
+/* 图标按钮：提高对比度，确保在玻璃导航上清晰可见 */
 .icon-btn {
   width: 38px; height: 38px; border-radius: 10px;
-  border: 1px solid var(--card-border); background: var(--card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.09);
   color: var(--text); cursor: pointer; font-size: 15px;
   display: flex; align-items: center; justify-content: center;
   transition: all 0.25s;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+body.light-mode .icon-btn {
+  border-color: rgba(0, 0, 0, 0.18);
+  background: rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(20, 40, 60, 0.08);
 }
 .icon-btn:hover {
   color: var(--primary); border-color: var(--primary);
   box-shadow: var(--glow); transform: translateY(-2px);
 }
+/* 语言切换按钮（文字样式） */
+.lang-btn {
+  width: auto; min-width: 42px; padding: 0 10px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
+  color: var(--primary); border-color: rgba(0, 209, 255, 0.45);
+  background: var(--primary-dim);
+}
+body.light-mode .lang-btn {
+  color: #0077a8;
+  background: rgba(0, 140, 255, 0.10);
+  border-color: rgba(0, 119, 168, 0.5);
+}
+.lang-btn:hover { background: var(--gradient); color: #fff; border-color: transparent; }
 #hamburger { display: none; }
 
 /* 移动端菜单 */
@@ -502,6 +523,15 @@ footer {
   margin-top: 40px; padding: 26px 0 34px;
   text-align: center; color: var(--text-muted); font-size: 0.88em;
 }
+footer .footer-links {
+  margin-top: 10px; display: flex; justify-content: center; gap: 22px;
+}
+footer .footer-links a {
+  color: var(--text-muted); text-decoration: none;
+  display: inline-flex; align-items: center; gap: 7px;
+  transition: color 0.25s;
+}
+footer .footer-links a:hover { color: var(--primary); }
 footer .footer-line { margin: 8px 0 0; opacity: 0.7; font-size: 0.82em; }
 
 /* ---------- 模态框 ---------- */
@@ -597,4 +627,43 @@ footer .footer-line { margin: 8px 0 0; opacity: 0.7; font-size: 0.82em; }
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   html { scroll-behavior: auto; }
+}
+
+/* ---------- 打印样式（打印 / 导出 PDF 简历） ---------- */
+@media print {
+  /* 隐藏交互与装饰元素 */
+  nav, #preloader, #particles-js, .bg-glow, #progressBar, #backToTop,
+  #toastWrap, .skip-link, .project-filter, .project-toolbar, .action-buttons,
+  #comments, .comments-status, #projectEmpty, .modal { display: none !important; }
+  body { background: #fff !important; color: #111; }
+  .container { max-width: 100%; margin: 0; padding: 0; }
+  .hero { padding: 0 0 10px; text-align: left; }
+  .hero h1 { -webkit-text-fill-color: #111; color: #111; filter: none; font-size: 26pt; }
+  .hero-subtitle { color: #333; }
+  .hero .typed-cursor { display: none; }
+  .hero-tags { justify-content: flex-start; margin: 12px 0 0; }
+  .tag { color: #004466; background: #eef6fb; border-color: #cfe6f2; }
+  .hero .tag:nth-child(even) { color: #4a3bb0; background: #f1eefb; border-color: #ddd6f5; }
+  .section, .hero, .work-card, .project-card, .highlight-card, .stat-card,
+  .info-item, .advantage-list li {
+    box-shadow: none !important; border-color: #d8dde3 !important;
+    background: #fff !important; backdrop-filter: none !important;
+    border-radius: 6px;
+  }
+  .section { margin-top: 14px; padding: 14px 6px; page-break-inside: avoid; break-inside: avoid; }
+  .section-title { font-size: 14pt; }
+  .section-title::before { box-shadow: none; }
+  .section-title::after { background: #d8dde3; }
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .project-card.hidden { display: block; }
+  .project-card, .work-card, .highlight-card { page-break-inside: avoid; break-inside: avoid; }
+  .project-card { animation: none; }
+  .project-badge { position: static; float: right; }
+  .project-card .card-arrow { display: none; }
+  .skill-bar { background: #eef1f4; }
+  .skill-bar .fill { background: #00a3d6; box-shadow: none; }
+  .stat-value, .modal-content h2 { -webkit-text-fill-color: #00607a; color: #00607a; }
+  .work-card { border-left-color: #00a3d6; }
+  .timeline li::before { background: #fff; border-color: #00a3d6; box-shadow: none; }
+  footer { display: none; }
 }

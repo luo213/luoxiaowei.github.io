@@ -1,5 +1,6 @@
 /* ==========================================================================
    Xiaowei Luo 个人网站 - 交互脚本
+   说明：内容数据与文案来自 content.js，本文件只负责渲染与交互
    ========================================================================== */
 
 /* ---------- 工具函数 ---------- */
@@ -20,9 +21,14 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-/* ---------- Toast 提示 ---------- */
+/* ---------- 语言状态（模块级，供 Toast 等提前使用） ---------- */
+let currentLang = "zh";
+
+/* ---------- Toast 提示（文案随当前语言） ---------- */
 const toastWrap = $("#toastWrap");
-function showToast(message, type = "success") {
+function showToast(key, type = "success") {
+  const dict = I18N[currentLang] || I18N.zh;
+  const message = dict[key] || key;
   const icons = { success: "fa-check-circle", error: "fa-exclamation-circle", info: "fa-info-circle" };
   const el = document.createElement("div");
   el.className = `toast ${type}`;
@@ -35,6 +41,11 @@ function showToast(message, type = "success") {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  /* ---------- 语言初始化（最先，供各模块使用） ---------- */
+  const savedLang = localStorage.getItem("lang");
+  const browserZh = navigator.language && navigator.language.toLowerCase().startsWith("zh");
+  currentLang = savedLang === "en" || savedLang === "zh" ? savedLang : (browserZh ? "zh" : "en");
+
   /* ---------- 预加载动画 ---------- */
   const preloader = $("#preloader");
   window.addEventListener("load", () => {
@@ -87,14 +98,14 @@ document.addEventListener("DOMContentLoaded", () => {
   function loadComments(theme) {
     if (!commentsEl) return;
     const repo = GITHUB_REPO.trim();
-    const status = msg => {
-      commentsEl.innerHTML = `<p class="comments-status">${msg}</p>`;
+    const status = key => {
+      commentsEl.innerHTML = `<p class="comments-status">${I18N[currentLang][key]}</p>`;
     };
     if (!repo || repo.includes("your-")) {
-      status('<i class="fas fa-cog"></i> 留言板尚未配置（main.js 中 GITHUB_REPO）');
+      status("commentsUnset");
       return;
     }
-    status('<i class="fas fa-spinner fa-spin"></i> 留言板加载中…');
+    status("commentsLoading");
     const script = document.createElement("script");
     script.src = "https://utteranc.es/client.js";
     script.setAttribute("repo", repo);
@@ -105,14 +116,24 @@ document.addEventListener("DOMContentLoaded", () => {
     script.async = true;
     script.onerror = () => {
       clearTimeout(commentsLoadTimer);
-      status('<i class="fas fa-exclamation-circle"></i> 留言板加载失败（无法访问 utteranc.es），请稍后刷新重试');
+      status("commentsFail");
     };
     commentsEl.appendChild(script);
+    // iframe 出现即移除加载占位，避免与评论区并存
+    const frameObserver = new MutationObserver(() => {
+      if (document.querySelector("iframe.utterances-frame")) {
+        const placeholder = commentsEl.querySelector(".comments-status");
+        if (placeholder) placeholder.remove();
+        frameObserver.disconnect();
+        clearTimeout(commentsLoadTimer);
+      }
+    });
+    frameObserver.observe(commentsEl, { childList: true, subtree: true });
     // 超时检测：脚本已加载但组件未出现时提示（utteranc.es 可能被网络拦截）
     clearTimeout(commentsLoadTimer);
     commentsLoadTimer = setTimeout(() => {
       if (!document.querySelector("iframe.utterances-frame")) {
-        status('<i class="fas fa-exclamation-circle"></i> 留言板加载超时（utteranc.es 无法访问），请稍后刷新重试');
+        status("commentsTimeout");
       }
     }, 10000);
   }
@@ -134,61 +155,40 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ---------- 主题切换 ---------- */
   const themeToggle = $("#themeToggle");
   const themeIcon = $("#themeIcon");
+  const themeColorMeta = document.querySelector('meta[name="theme-color"]');
   function setTheme(theme, save = true) {
     document.body.classList.toggle("light-mode", theme === "light");
     themeIcon.className = theme === "light" ? "fas fa-sun" : "fas fa-moon";
+    if (themeColorMeta) {
+      themeColorMeta.setAttribute("content", theme === "light" ? "#f2f6fb" : "#05070d");
+    }
     if (save) localStorage.setItem("theme", theme);
     syncCommentsTheme(theme);
   }
   // 首次访问跟随系统偏好
-  const savedTheme = localStorage.getItem("theme");
+  const storedTheme = localStorage.getItem("theme");
   const systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  setTheme(savedTheme || (systemDark ? "dark" : "light"), !savedTheme);
+  setTheme(storedTheme || (systemDark ? "dark" : "light"), !storedTheme);
   themeToggle.addEventListener("click", () => {
     const next = document.body.classList.contains("light-mode") ? "dark" : "light";
     setTheme(next);
-    showToast(next === "light" ? "已切换到浅色模式" : "已切换到深色模式", "info");
+    showToast(next === "light" ? "toastLight" : "toastDark", "info");
   });
-
-  /* ---------- 打字机效果 ---------- */
-  const roles = [
-    "嵌入式硬件工程师 ｜ Embedded Hardware Engineer",
-    "MCU ｜ PCB ｜ Sensor System",
-    "矿用设备与电源管理研发"
-  ];
-  const typeTarget = $("#typedText");
-  let roleIdx = 0, charIdx = 0, deleting = false;
-  function typeLoop() {
-    const current = roles[roleIdx];
-    if (!deleting) {
-      charIdx++;
-      typeTarget.textContent = current.slice(0, charIdx);
-      if (charIdx === current.length) {
-        deleting = true;
-        setTimeout(typeLoop, 2200);
-        return;
-      }
-      setTimeout(typeLoop, 80);
-    } else {
-      charIdx--;
-      typeTarget.textContent = current.slice(0, charIdx);
-      if (charIdx === 0) {
-        deleting = false;
-        roleIdx = (roleIdx + 1) % roles.length;
-        setTimeout(typeLoop, 300);
-        return;
-      }
-      setTimeout(typeLoop, 36);
-    }
-  }
-  setTimeout(typeLoop, 800);
 
   /* ---------- 汉堡菜单 ---------- */
   const nav = $("#mainNav");
   const hamburger = $("#hamburger");
-  hamburger.addEventListener("click", () => nav.classList.toggle("menu-open"));
+  hamburger.addEventListener("click", () => {
+    const open = nav.classList.toggle("menu-open");
+    hamburger.setAttribute("aria-expanded", String(open));
+    hamburger.setAttribute("aria-label", I18N[currentLang][open ? "ariaMenuClose" : "ariaMenuOpen"]);
+  });
   $$("#mainNav .nav-links a").forEach(link => {
-    link.addEventListener("click", () => nav.classList.remove("menu-open"));
+    link.addEventListener("click", () => {
+      nav.classList.remove("menu-open");
+      hamburger.setAttribute("aria-expanded", "false");
+      hamburger.setAttribute("aria-label", I18N[currentLang].ariaMenuOpen);
+    });
   });
 
   /* ---------- 导航：滚动收缩 + 高亮 ---------- */
@@ -223,8 +223,8 @@ document.addEventListener("DOMContentLoaded", () => {
   $$("[data-copy]").forEach(btn => {
     btn.addEventListener("click", function () {
       const text = this.getAttribute("data-copy");
-      const done = () => showToast("已复制到剪贴板");
-      const fail = () => showToast("复制失败，请手动复制", "error");
+      const done = () => showToast("toastCopied");
+      const fail = () => showToast("toastCopyFail", "error");
       if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(done).catch(fail);
       } else {
@@ -239,10 +239,20 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ---------- 发送邮件：提示并尝试打开邮件客户端 ---------- */
-  // mailto 依赖本机邮件客户端，未关联时点击无反应，给出提示并引导备用方式
   $$('a[href^="mailto:"]').forEach(link => {
     link.addEventListener("click", () => {
-      showToast("正在尝试打开邮件客户端…若未弹出，请用“网页版写信”或复制邮箱", "info");
+      showToast("toastMail", "info");
+    });
+  });
+
+  /* ---------- 打印简历 ---------- */
+  $$("[data-print]").forEach(btn => {
+    btn.addEventListener("click", () => window.print());
+  });
+  // 打印前确保技能进度条已填充（未滚动到时宽度为 0）
+  window.addEventListener("beforeprint", () => {
+    $$(".skill-bar .fill").forEach(fill => {
+      fill.style.width = fill.dataset.level + "%";
     });
   });
 
@@ -276,7 +286,6 @@ document.addEventListener("DOMContentLoaded", () => {
       counterObserver.unobserve(el);
     });
   }, { threshold: 0.5 });
-  $$(".stat-value[data-count]").forEach(el => counterObserver.observe(el));
 
   /* ---------- 技能进度条 ---------- */
   const skillObserver = new IntersectionObserver(entries => {
@@ -288,7 +297,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }, { threshold: 0.4 });
-  $$(".skill-bar .fill").forEach(fill => skillObserver.observe(fill));
 
   /* ---------- 项目模态框 ---------- */
   const modal = $("#projectModal");
@@ -297,35 +305,55 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalTags = $("#modal-tags");
   const modalClose = $("#modalClose");
   let lastFocused = null;
+  let openCardKey = null;
 
-  function openModal(card) {
+  function openModalByKey(key) {
+    const card = $(`.project-card[data-key="${key}"]`);
+    if (!card) return;
     lastFocused = document.activeElement;
+    openCardKey = key;
+    const t = I18N[currentLang];
+    const catKey = {
+      power: "filterPower", camera: "filterCamera", sensor: "filterSensor",
+      controller: "filterController", alarm: "filterAlarm"
+    }[card.dataset.category];
     modalTitle.textContent = card.dataset.title;
     modalDetail.textContent = card.dataset.detail;
-    const tags = [card.dataset.category, card.dataset.role].filter(Boolean);
-    modalTags.innerHTML = tags.map(t => `<span class="modal-tag">${escapeHtml(t)}</span>`).join("");
+    const tags = [t[catKey], t[card.dataset.role]].filter(Boolean);
+    modalTags.innerHTML = tags.map(tag => `<span class="modal-tag">${escapeHtml(tag)}</span>`).join("");
     modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
     modalClose.focus();
   }
   function closeModal() {
     modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
+    openCardKey = null;
     if (lastFocused) lastFocused.focus();
   }
-  $$(".project-card").forEach(card => {
-    card.addEventListener("click", () => openModal(card));
-    card.addEventListener("keydown", e => {
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openModal(card); }
-    });
-  });
+  function refreshOpenModal() {
+    // 语言切换时，用当前语言刷新已打开的模态框内容
+    if (!openCardKey || !modal.classList.contains("open")) return;
+    const card = $(`.project-card[data-key="${openCardKey}"]`);
+    if (!card) return;
+    const t = I18N[currentLang];
+    const catKey = {
+      power: "filterPower", camera: "filterCamera", sensor: "filterSensor",
+      controller: "filterController", alarm: "filterAlarm"
+    }[card.dataset.category];
+    modalTitle.textContent = card.dataset.title;
+    modalDetail.textContent = card.dataset.detail;
+    const tags = [t[catKey], t[card.dataset.role]].filter(Boolean);
+    modalTags.innerHTML = tags.map(tag => `<span class="modal-tag">${escapeHtml(tag)}</span>`).join("");
+  }
   modalClose.addEventListener("click", closeModal);
   modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
   document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
 
   /* ---------- 项目过滤 ---------- */
   const filterBtns = $$(".filter-btn");
-  const projectCards = $$(".project-card");
   const projectSearch = $("#projectSearch");
   const roleToggle = $("#roleToggle");
   const projectEmpty = $("#projectEmpty");
@@ -334,9 +362,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function applyProjectFilters() {
     const keyword = projectSearch.value.trim().toLowerCase();
     let visibleCount = 0;
-    projectCards.forEach(card => {
+    $$("#projectRender .project-card").forEach(card => {
       const matchCategory = activeFilter === "all" || card.dataset.category === activeFilter;
-      const matchRole = !roleToggle.checked || (card.dataset.role || "").includes("独立");
+      const matchRole = !roleToggle.checked || card.dataset.independent === "true";
       const text = `${card.dataset.title} ${card.dataset.detail} ${card.dataset.category} ${card.dataset.role}`.toLowerCase();
       const matchKeyword = !keyword || text.includes(keyword);
       const show = matchCategory && matchRole && matchKeyword;
@@ -361,33 +389,171 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   projectSearch.addEventListener("input", throttle(applyProjectFilters, 150));
   roleToggle.addEventListener("change", applyProjectFilters);
-  applyProjectFilters();
 
-  /* ---------- 项目卡片聚光灯效果 ---------- */
-  projectCards.forEach(card => {
-    card.addEventListener("mousemove", e => {
-      const rect = card.getBoundingClientRect();
-      card.style.setProperty("--mx", `${((e.clientX - rect.left) / rect.width) * 100}%`);
-      card.style.setProperty("--my", `${((e.clientY - rect.top) / rect.height) * 100}%`);
+  /* ---------- 项目卡片交互（模态框 + 聚光灯） ---------- */
+  function bindProjectCards() {
+    $$("#projectRender .project-card").forEach(card => {
+      card.addEventListener("click", () => openModalByKey(card.dataset.key));
+      card.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openModalByKey(card.dataset.key); }
+      });
+      card.addEventListener("mousemove", e => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty("--mx", `${((e.clientX - rect.left) / rect.width) * 100}%`);
+        card.style.setProperty("--my", `${((e.clientY - rect.top) / rect.height) * 100}%`);
+      });
     });
+  }
+
+  /* ---------- 内容渲染（数据来自 content.js） ---------- */
+  const langToggle = $("#langToggle");
+  const typeTarget = $("#typedText");
+  const advList = $("#advList");
+  const statsRender = $("#statsRender");
+  const workRender = $("#workRender");
+  const projectRender = $("#projectRender");
+  const skillsRender = $("#skillsRender");
+  const skillTagsRender = $("#skillTagsRender");
+  const timelineRender = $("#timelineRender");
+
+  /* --- 打字机（文案随语言） --- */
+  let typeTimer = null, roleIdx = 0, charIdx = 0, deleting = false;
+  function getRoles() {
+    return [I18N[currentLang].typeRole1, I18N[currentLang].typeRole2, I18N[currentLang].typeRole3];
+  }
+  function typeLoop() {
+    const current = getRoles()[roleIdx];
+    if (!deleting) {
+      charIdx++;
+      typeTarget.textContent = current.slice(0, charIdx);
+      if (charIdx === current.length) {
+        deleting = true;
+        typeTimer = setTimeout(typeLoop, 2200);
+        return;
+      }
+      typeTimer = setTimeout(typeLoop, 80);
+    } else {
+      charIdx--;
+      typeTarget.textContent = current.slice(0, charIdx);
+      if (charIdx === 0) {
+        deleting = false;
+        roleIdx = (roleIdx + 1) % getRoles().length;
+        typeTimer = setTimeout(typeLoop, 300);
+        return;
+      }
+      typeTimer = setTimeout(typeLoop, 36);
+    }
+  }
+  function resetTypewriter() {
+    clearTimeout(typeTimer);
+    roleIdx = 0; charIdx = 0; deleting = false;
+    typeTarget.textContent = getRoles()[0];
+    typeTimer = setTimeout(typeLoop, 800);
+  }
+
+  /* --- 应用静态文案 --- */
+  function applyI18n() {
+    const t = I18N[currentLang];
+    $$("[data-i18n]").forEach(el => {
+      const key = el.dataset.i18n;
+      if (key && t[key] !== undefined) el.innerHTML = t[key];
+    });
+    $$("[data-i18n-placeholder]").forEach(el => {
+      const key = el.dataset.i18nPlaceholder;
+      if (key && t[key] !== undefined) el.placeholder = t[key];
+    });
+    $$("[data-i18n-aria]").forEach(el => {
+      const key = el.dataset.i18nAria;
+      if (key && t[key] !== undefined) el.setAttribute("aria-label", t[key]);
+    });
+    document.documentElement.lang = currentLang === "zh" ? "zh-CN" : "en";
+    document.title = t.htmlTitle;
+    const metaDesc = document.getElementById("metaDesc");
+    if (metaDesc) metaDesc.content = t.htmlDesc;
+    // 语言按钮：显示目标语言
+    langToggle.textContent = I18N[currentLang === "zh" ? "en" : "zh"].langSwitch;
+    langToggle.title = currentLang === "zh" ? "English" : "中文";
+  }
+
+  /* --- 渲染函数（结构必须与 style.css 选择器匹配） --- */
+  function renderAdvantages() {
+    advList.innerHTML = ADVANTAGES.map(item => `
+      <li><span class="adv-icon"><i class="fas ${item.icon}"></i></span>${escapeHtml(item[currentLang])}</li>`).join("");
+  }
+  function renderStats() {
+    statsRender.innerHTML = STATS.map(s => s.count !== null ? `
+      <div class="stat-card">
+        <div class="stat-value" data-count="${s.count}" data-suffix="${escapeHtml(s.suffix[currentLang])}">0${escapeHtml(s.suffix[currentLang])}</div>
+        <div class="stat-label">${escapeHtml(s.label[currentLang])}</div>
+      </div>` : `
+      <div class="stat-card">
+        <div class="stat-value">${escapeHtml(s.label[currentLang])}</div>
+        <div class="stat-label">${escapeHtml(s.sub[currentLang])}</div>
+      </div>`).join("");
+    $$("#statsRender .stat-value[data-count]").forEach(el => counterObserver.observe(el));
+  }
+  function renderWork() {
+    workRender.innerHTML = WORK.map(w => `
+      <div class="work-card">
+        <h3>${escapeHtml(w.company)}</h3>
+        <div class="work-meta"><i class="fas fa-calendar-alt"></i>${escapeHtml(w.period[currentLang])} ｜ ${escapeHtml(I18N[currentLang][w.roleKey])}</div>
+        <ul>${w.duties[currentLang].map(d => `<li>${escapeHtml(d)}</li>`).join("")}</ul>
+      </div>`).join("");
+  }
+  function renderProjects() {
+    projectRender.innerHTML = PROJECTS.map(p => `
+      <div class="project-card" role="button" tabindex="0"
+        data-key="${p.id}" data-category="${p.category}" data-role="${p.role}"
+        data-independent="${p.independent}"
+        data-title="${escapeHtml(p.title[currentLang])}"
+        data-detail="${escapeHtml(p.detail[currentLang])}">
+        <span class="project-badge">${escapeHtml(I18N[currentLang][p.role])}</span>
+        <h3>${escapeHtml(p.title[currentLang])}</h3>
+        <ul>${p.tags.map(tag => `<li>${escapeHtml(typeof tag === "string" ? tag : tag[currentLang])}</li>`).join("")}</ul>
+        <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
+      </div>`).join("");
+    bindProjectCards();
+    applyProjectFilters();
+  }
+  function renderSkills() {
+    skillsRender.innerHTML = SKILLS.map(s => `
+      <div class="skill-item">
+        <div class="skill-head"><strong>${escapeHtml(s.name[currentLang])}</strong><span>${s.level}%</span></div>
+        <div class="skill-bar"><div class="fill" data-level="${s.level}"></div></div>
+      </div>`).join("");
+    skillTagsRender.innerHTML = SKILL_TOOLS.map(tool => `<span class="tag">${escapeHtml(tool[currentLang])}</span>`).join("");
+    $$("#skillsRender .fill").forEach(fill => skillObserver.observe(fill));
+  }
+  function renderTimeline() {
+    timelineRender.innerHTML = TIMELINE.map(item => `
+      <li><span class="tl-time">${escapeHtml(item.time[currentLang])}</span><br><span class="tl-text">${escapeHtml(item.text[currentLang])}</span></li>`).join("");
+  }
+
+  /* --- 语言切换总调度 --- */
+  function setLanguage(lang, save, showTip) {
+    currentLang = lang;
+    if (save) localStorage.setItem("lang", lang);
+    applyI18n();
+    renderAdvantages();
+    renderStats();
+    renderWork();
+    renderProjects();
+    renderSkills();
+    renderTimeline();
+    resetTypewriter();
+    refreshOpenModal();
+    if (showTip) showToast("toastLang", "info");
+  }
+  setLanguage(currentLang, false, false);
+
+  langToggle.addEventListener("click", () => {
+    setLanguage(currentLang === "zh" ? "en" : "zh", true, true);
   });
 
   /* ---------- 回到顶部 ---------- */
   $("#backToTop").addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
-
-  /* ---------- 联系方式展开 ---------- */
-  const contactToggle = $("#contactToggle");
-  const contactDetails = $("#contactDetails");
-  if (contactToggle && contactDetails) {
-    contactToggle.addEventListener("click", () => {
-      const open = contactDetails.classList.toggle("open");
-      contactToggle.innerHTML = open
-        ? '<i class="fas fa-chevron-up"></i> 收起'
-        : '<i class="fas fa-envelope"></i> 联系我';
-    });
-  }
 
   /* ---------- 注册 Service Worker ---------- */
   if ("serviceWorker" in navigator) {
