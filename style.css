@@ -464,8 +464,11 @@ body.light-mode .skill-bar { background: rgba(0, 0, 0, 0.06); }
 
 /* ---------- 留言板（GitHub Issues / utterances） ---------- */
 #comments { margin-top: 8px; }
-#comments .section-note { margin: 8px 0; }
 #comments iframe { max-width: 100%; width: 100%; }
+.comments-status {
+  text-align: center; color: var(--text-muted); font-size: 0.9em;
+  padding: 20px 0; margin: 0;
+}
 
 /* ---------- 技术亮点 ---------- */
 .highlight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }

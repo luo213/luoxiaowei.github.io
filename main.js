@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ---------- 留言板（GitHub Issues / utterances） ---------- */
   const GITHUB_REPO = "luo213/luoxiaowei.github.io";
   const commentsEl = $("#comments");
-  const commentsHint = $("#comments .section-note");
+  let commentsLoadTimer = null;
 
   function utterancesTheme(theme) {
     return theme === "light" ? "github-light" : "github-dark";
@@ -87,12 +87,14 @@ document.addEventListener("DOMContentLoaded", () => {
   function loadComments(theme) {
     if (!commentsEl) return;
     const repo = GITHUB_REPO.trim();
+    const status = msg => {
+      commentsEl.innerHTML = `<p class="comments-status">${msg}</p>`;
+    };
     if (!repo || repo.includes("your-")) {
-      commentsHint.innerHTML =
-        '<i class="fas fa-cog"></i> 留言板尚未配置：请在 main.js 顶部将 GITHUB_REPO 设置为你的 GitHub 公开仓库（如 "用户名/仓库名"），并在 GitHub 上安装 utterances App。';
+      status('<i class="fas fa-cog"></i> 留言板尚未配置（main.js 中 GITHUB_REPO）');
       return;
     }
-    commentsEl.innerHTML = "";
+    status('<i class="fas fa-spinner fa-spin"></i> 留言板加载中…');
     const script = document.createElement("script");
     script.src = "https://utteranc.es/client.js";
     script.setAttribute("repo", repo);
@@ -101,7 +103,18 @@ document.addEventListener("DOMContentLoaded", () => {
     script.setAttribute("theme", utterancesTheme(theme));
     script.setAttribute("crossorigin", "anonymous");
     script.async = true;
+    script.onerror = () => {
+      clearTimeout(commentsLoadTimer);
+      status('<i class="fas fa-exclamation-circle"></i> 留言板加载失败（无法访问 utteranc.es），请稍后刷新重试');
+    };
     commentsEl.appendChild(script);
+    // 超时检测：脚本已加载但组件未出现时提示（utteranc.es 可能被网络拦截）
+    clearTimeout(commentsLoadTimer);
+    commentsLoadTimer = setTimeout(() => {
+      if (!document.querySelector("iframe.utterances-frame")) {
+        status('<i class="fas fa-exclamation-circle"></i> 留言板加载超时（utteranc.es 无法访问），请稍后刷新重试');
+      }
+    }, 10000);
   }
   // 主题切换时同步留言板主题：优先通知 iframe，失败则重新加载
   function syncCommentsTheme(theme) {
