@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="罗小卫的个人简介与项目展示，聚焦电子工程与嵌入式研发。">
+  <title>罗小卫 - 个人简介</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <!-- Open Graph 标签 -->
+  <meta property="og:title" content="罗小卫 - 个人简介">
+  <meta property="og:description" content="罗小卫的个人简介及作品展示，融合语义化、无障碍、响应式设计、PWA优化及后台留言管理功能。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yourdomain.com/yourpage.html">
+  <meta property="og:image" content="https://yourdomain.com/og-image.jpg">
+  <!-- 结构化数据 -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "罗小卫",
+    "jobTitle": "电子工程师（研发）",
+    "url": "https://yourdomain.com/yourpage.html",
+    "sameAs": [
+      "https://www.linkedin.com/in/yourprofile",
+      "https://github.com/yourprofile"
+    ]
+  }
+  </script>
+  <!-- 引入Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pzrZ8qCCT/K6pTOHjdEWJyV7b8frv/Jx43oyss3xLcmJY1hl+X8vXj3P8V/7hfR6Z3/5M5O9I6FSl0V0b+e6g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- 引入particles.js -->
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js" defer></script>
+  <!-- 引入 Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <!-- 内联CSS -->
+  <style>
+    /* 颜色变量 */
+    :root {
+      --primary-color: #00d1ff;
+      --bg-color: #000;
+      --light-bg: #fff;
+      --light-text: #000;
+      --container-bg: rgba(0, 0, 0, 0.8);
+      --container-border: rgba(0, 123, 255, 0.5);
+      --shadow-color: rgba(0, 123, 255, 0.4);
+    }
+    /* 全局重置及基础样式 */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: var(--bg-color);
+      color: #fff;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+      line-height: 1.6;
+    }
+    body.light-mode { background: var(--light-bg); color: var(--light-text); }
+    /* 动态背景 */
+    #particles-js { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: -1; }
+    /* 预加载动画 */
+    #preloader {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg-color); display: flex; align-items: center; justify-content: center;
+      z-index: 2000;
+    }
+    #preloader .spinner {
+      border: 6px solid rgba(255,255,255,0.2); border-top: 6px solid var(--primary-color);
+      border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    /* 跳过链接 */
+    .skip-link { position: absolute; top: -40px; left: 0; background: var(--primary-color); color: #000; padding: 8px; z-index: 100; transition: top 0.3s; }
+    .skip-link:focus { top: 0; }
+    /* 导航栏 */
+    nav {
+      position: fixed; top: 0; left: 0; width: 100%;
+      background: var(--container-bg); border-bottom: 1px solid var(--container-border);
+      z-index: 1500; display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 20px;
+    }
+    nav ul { list-style: none; display: flex; gap: 15px; }
+    nav a { color: var(--primary-color); text-decoration: none; font-weight: bold; transition: color 0.3s; }
+    nav a:hover, nav a.active { text-decoration: underline; }
+    .theme-toggle { background: none; border: none; color: var(--primary-color); font-size: 1.2em; cursor: pointer; margin-left: 10px; }
+    /* 主容器 */
+    .container {
+      max-width: 1000px; margin: 80px auto 60px;
+      background: var(--container-bg); border: 1px solid var(--container-border);
+      border-radius: 10px; padding: 30px; box-shadow: 0 0 30px var(--shadow-color);
+      animation: fadeIn 1s ease; position: relative; z-index: 1;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    /* 页眉 */
+    header {
+      text-align: center; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2);
+      margin-bottom: 30px;
+    }
+    header h1 {
+      font-family: 'Orbitron', sans-serif; font-size: 3em; color: var(--primary-color);
+      text-shadow: 0 0 10px var(--primary-color);
+    }
+    .hero-subtitle { margin-top: 8px; font-size: 1.1em; opacity: 0.9; }
+    .hero-tags { margin: 14px 0 18px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .tag {
+      padding: 4px 10px; border-radius: 999px; background: rgba(0, 209, 255, 0.15);
+      border: 1px solid rgba(0, 209, 255, 0.4); color: var(--primary-color); font-size: 0.85em;
+    }
+    .action-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .action-btn {
+      background: var(--primary-color); color: #000; border: none; padding: 8px 14px; border-radius: 6px;
+      cursor: pointer; text-decoration: none; font-weight: 600; transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .action-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 209, 255, 0.35); }
+    /* 主体区域：各section */
+    main section { margin-bottom: 30px; padding: 0 10px; }
+    main section h2 {
+      font-size: 1.8em; margin-bottom: 15px;
+      border-left: 5px solid var(--primary-color); padding-left: 10px;
+    }
+    main section p, main section li { margin-bottom: 8px; }
+    /* 项目经历过滤 */
+    .project-filter { margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .project-toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+    .project-search {
+      flex: 1; min-width: 220px; padding: 8px 10px; border-radius: 6px;
+      border: 1px solid var(--container-border); background: #1a1a1a; color: #fff;
+    }
+    .project-toggle { display: flex; align-items: center; gap: 6px; }
+    .project-toggle input { accent-color: var(--primary-color); }
+    .project-filter button {
+      background: var(--primary-color); border: none; color: #000;
+      padding: 5px 10px; margin-right: 5px; border-radius: 5px;
+      cursor: pointer; transition: background 0.3s;
+    }
+    .project-filter button.active, .project-filter button:hover { background: #fff; }
+    /* 项目卡片 */
+    .project-container {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .project-card {
+      background: rgba(0,0,0,0.6); border: 1px solid var(--container-border);
+      border-radius: 8px; padding: 20px; transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer; overflow: hidden; position: relative;
+    }
+    .project-card:hover { transform: translateY(-5px); box-shadow: 0 0 20px var(--primary-color); }
+    .project-card h3 { color: var(--primary-color); font-family: 'Orbitron', sans-serif; margin-bottom: 10px; }
+    .project-card ul { list-style: none; padding-left: 0; }
+    .project-card ul li { position: relative; padding-left: 14px; }
+    .project-card ul li::before { content: '>'; position: absolute; left: 0; color: var(--primary-color); }
+    .project-badge {
+      position: absolute; top: 16px; right: 16px; padding: 4px 8px; border-radius: 999px;
+      background: rgba(0, 209, 255, 0.15); border: 1px solid rgba(0, 209, 255, 0.4); font-size: 0.75em;
+    }
+    /* 表单 */
+    .message-form input, .message-form textarea {
+      width: 100%; padding: 10px; margin-bottom: 10px;
+      border: 1px solid var(--container-border); border-radius: 5px;
+      background: #222; color: #fff;
+    }
+    .message-form input:focus, .message-form textarea:focus { outline: none; border-color: var(--primary-color); }
+    .message-form button {
+      background: var(--primary-color); border: none;
+      padding: 10px 20px; color: #000; border-radius: 5px;
+      cursor: pointer; transition: background 0.3s;
+    }
+    .message-form button:hover { background: #fff; }
+    .message-list { margin-top: 16px; display: grid; gap: 10px; }
+    .message-item { border: 1px solid var(--container-border); border-radius: 8px; padding: 12px; background: rgba(0, 0, 0, 0.5); }
+    .message-item h4 { font-size: 1em; margin-bottom: 6px; color: var(--primary-color); }
+    /* 联系方式模块 */
+    #contactDetails { display: none; margin-top: 10px; }
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .info-item { border: 1px solid var(--container-border); border-radius: 8px; padding: 12px; background: rgba(0, 0, 0, 0.5); }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 12px; }
+    .stat-card { text-align: center; padding: 12px; border: 1px solid var(--container-border); border-radius: 8px; background: rgba(0, 0, 0, 0.5); }
+    .stat-value { font-size: 1.6em; color: var(--primary-color); font-weight: 700; }
+    .work-grid { display: grid; gap: 16px; }
+    .work-card { border: 1px solid var(--container-border); border-radius: 10px; padding: 16px; background: rgba(0, 0, 0, 0.5); }
+    .work-card h3 { color: var(--primary-color); margin-bottom: 6px; }
+    .work-meta { opacity: 0.85; margin-bottom: 10px; }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .highlight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+    .highlight-card { border: 1px solid var(--container-border); border-radius: 10px; padding: 14px; background: rgba(0, 0, 0, 0.5); }
+    /* 模态框 */
+    .modal {
+      display: none; position: fixed; z-index: 1000;
+      left: 0; top: 0; width: 100%; height: 100%; overflow: auto;
+      background: rgba(0,0,0,0.8);
+    }
+    .modal[aria-hidden="false"] { display: block; }
+    .modal-content {
+      background: rgba(0,0,0,0.9); margin: 10% auto;
+      padding: 20px; border: 1px solid var(--primary-color);
+      width: 80%; max-width: 600px; border-radius: 10px;
+      color: #fff; position: relative; animation: modalFade 0.5s;
+    }
+    @keyframes modalFade { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    .close { position: absolute; right: 20px; top: 10px;
+      color: var(--primary-color); font-size: 30px; font-weight: bold;
+      cursor: pointer;
+    }
+    /* 回到顶部按钮 */
+    #backToTop {
+      position: fixed; right: 20px; bottom: 20px;
+      background: var(--primary-color); color: #000;
+      border: none; padding: 10px; border-radius: 50%;
+      font-size: 1.2em; cursor: pointer; display: none;
+      z-index: 1500;
+    }
+    /* 响应式设计 */
+    @media (max-width: 600px) {
+      .container { margin: 100px 20px 60px; padding: 20px; }
+      nav { flex-direction: column; gap: 10px; }
+    }
+    /* 后台管理页面样式 */
+    #adminPanel { display: none; padding: 20px; }
+    #adminPanel h2 { margin-bottom: 15px; }
+    #adminMessages { margin-top: 20px; }
+    #adminMessages table { width: 100%; border-collapse: collapse; }
+    #adminMessages th, #adminMessages td {
+      border: 1px solid var(--container-border); padding: 8px; text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <!-- 动态背景 -->
+  <div id="particles-js"></div>
+  <!-- 预加载动画 -->
+  <div id="preloader" aria-hidden="true">
+    <div class="spinner" aria-label="加载中"></div>
+  </div>
+  <!-- 跳过导航链接 -->
+  <a href="#mainContent" class="skip-link">跳过导航</a>
+  <!-- 导航栏（仅显示在普通用户模式） -->
+  <nav role="navigation" id="mainNav">
+    <ul>
+      <li><a href="#overview" class="nav-link active">能力概览</a></li>
+      <li><a href="#basicInfo" class="nav-link">基本信息</a></li>
+      <li><a href="#education" class="nav-link">教育经历</a></li>
+      <li><a href="#work" class="nav-link">工作经历</a></li>
+      <li><a href="#projects" class="nav-link">项目经历</a></li>
+      <li><a href="#skills" class="nav-link">核心技能</a></li>
+      <li><a href="#timeline" class="nav-link">时间轴</a></li>
+      <li><a href="#message" class="nav-link">留言板</a></li>
+      <li><a href="#blog" class="nav-link">动态更新</a></li>
+      <li><a href="#contact" class="nav-link">联系方式</a></li>
+    </ul>
+    <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+      <i class="fas fa-adjust"></i> 切换主题
+    </button>
+  </nav>
+  <!-- 后台管理面板（通过 URL ?admin=true 进入） -->
+  <div id="adminPanel">
+    <h2>后台管理 - 留言列表</h2>
+    <div id="adminLogin">
+      <p>Demo账号: <strong>admin@example.com</strong> 密码: <strong>123456</strong></p>
+      <input type="email" id="adminEmail" placeholder="管理员邮箱">
+      <input type="password" id="adminPassword" placeholder="密码">
+      <button id="adminLoginBtn">登录</button>
+    </div>
+    <div id="adminMessages" style="display:none;">
+      <h3>留言记录</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>姓名</th>
+            <th>邮箱</th>
+            <th>留言内容</th>
+            <th>时间</th>
+          </tr>
+        </thead>
+        <tbody id="messagesTableBody">
+          <!-- 留言记录将填充在这里 -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- 主内容 -->
+  <div class="container" id="mainContent">
+    <header>
+      <h1 id="pageTitle">罗小卫的个人简介</h1>
+      <p class="hero-subtitle">电子工程师｜硬件研发｜嵌入式系统</p>
+      <div class="hero-tags">
+        <span class="tag">STM32</span>
+        <span class="tag">STC12</span>
+        <span class="tag">Modbus RTU/TCP</span>
+        <span class="tag">RS485</span>
+        <span class="tag">LVGL</span>
+        <span class="tag">防爆标准</span>
+      </div>
+      <div class="action-buttons">
+        <a class="action-btn" href="mailto:1743504643@qq.com">发送邮件</a>
+        <a class="action-btn" href="tel:18586692247">拨打电话</a>
+        <button class="action-btn" type="button" data-copy="1743504643@qq.com">复制邮箱</button>
+        <button class="action-btn" type="button" data-copy="18586692247">复制电话</button>
+      </div>
+    </header>
+    <main>
+      <section id="overview" tabindex="0">
+        <h2>能力概览</h2>
+        <p>专注矿用设备与工业现场应用研发，覆盖硬件设计、嵌入式开发与系统联调，重视可靠性与工程化落地。</p>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-value">2+年</div>
+            <div>硬件与嵌入式研发经验</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">10+</div>
+            <div>矿用设备与系统项目</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">全流程</div>
+            <div>原理图、PCB、联调与优化</div>
+          </div>
+        </div>
+      </section>
+      <!-- 基本信息 -->
+      <section id="basicInfo" tabindex="0">
+        <h2>基本信息</h2>
+        <div class="info-grid">
+          <div class="info-item"><strong>姓名：</strong>罗小卫</div>
+          <div class="info-item"><strong>性别：</strong>男</div>
+          <div class="info-item"><strong>年龄：</strong>27</div>
+          <div class="info-item"><strong>求职意向：</strong>电子工程师</div>
+          <div class="info-item"><strong>电话：</strong>18586692247</div>
+          <div class="info-item"><strong>邮箱：</strong>lxw2247@gmail.com</div>
+        </div>
+      </section>
+      <!-- 教育经历 -->
+      <section id="education" tabindex="0">
+        <h2>教育经历</h2>
+        <p>2019.09 - 2023.06 中国矿业大学徐海学院</p>
+        <p>电子科学与技术｜本科</p>
+        <p>专业课：模拟电子技术、数字电子技术、微处理器原理与接口技术、数字信号处理、信号与线性系统、FPGA、SOPC、嵌入式系统设计、C语言程序设计</p>
+      </section>
+      <!-- 工作经历 -->
+      <section id="work" tabindex="0">
+        <h2>工作经历</h2>
+        <div class="work-grid">
+          <div class="work-card">
+            <h3>徐州宏远通信科技有限公司</h3>
+            <div class="work-meta">2023.06 - 2024.08｜电子工程师（研发）</div>
+            <ul>
+              <li>参与调研、开发新产品与方案评估</li>
+              <li>负责功能设计与实现，对样机进行测试和优化</li>
+              <li>协同生产与工艺文件、BOM整理及硬件选型</li>
+              <li>对接煤安送审并提供技术支持</li>
+            </ul>
+          </div>
+          <div class="work-card">
+            <h3>徐州凌创智能科技发展有限公司</h3>
+            <div class="work-meta">2024.08 - 至今｜电子工程师（研发）</div>
+            <ul>
+              <li>主导新产品调研与研发推进</li>
+              <li>负责功能设计实现与样机测试优化</li>
+              <li>推动生产协作、BOM整理与硬件选型</li>
+              <li>煤安送审资料对接与技术支持</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <!-- 项目经历 -->
+      <section id="projects" tabindex="0">
+        <h2>项目经历</h2>
+        <!-- 项目过滤按钮 -->
+        <div class="project-filter">
+          <button class="filter-btn active" data-filter="all">全部</button>
+          <button class="filter-btn" data-filter="传感器">传感器</button>
+          <button class="filter-btn" data-filter="摄像仪">摄像仪</button>
+          <button class="filter-btn" data-filter="控制器">控制器</button>
+          <button class="filter-btn" data-filter="报警器">报警器</button>
+          <button class="filter-btn" data-filter="电源">电源</button>
+        </div>
+        <div class="project-toolbar">
+          <input id="projectSearch" class="project-search" type="text" placeholder="搜索项目关键词，如：RS485、光纤、Modbus">
+          <label class="project-toggle">
+            <input id="roleToggle" type="checkbox">
+            只看独立开发
+          </label>
+        </div>
+        <div class="project-container">
+          <div class="project-card" role="button" tabindex="0" data-category="电源" data-role="独立开发" data-title="矿用双路12V/18V浇封电源" data-detail="基于STC12与CN3765充电管理芯片，设计磷酸铁锂电池充放电管理电路，实现智能充放电控制与保护。通过RS485+Modbus RTU与上位机通信，支持电压、电流等状态读取及输入输出控制，完成原理图、PCB与单片机程序开发。">
+            <span class="project-badge">独立开发</span>
+            <h3>矿用双路12V/18V浇封电源</h3>
+            <ul>
+              <li>STC12 + CN3765</li>
+              <li>RS485 + Modbus RTU</li>
+            </ul>
+          </div>
+          <div class="project-card" role="button" tabindex="0" data-category="摄像仪" data-role="硬件设计" data-title="红外测温摄像仪（防爆改造）" data-detail="针对海康威视双光谱摄像仪重新设计电源模块，满足GB3836防爆标准。协同结构工程师完成防爆外壳设计，并为送审认证提供技术支持，协助通过防爆检测。">
+            <span class="project-badge">技术支持</span>
+            <h3>红外测温摄像仪（防爆改造）</h3>
+            <ul>
+              <li>电源模块重构</li>
+              <li>GB3836防爆标准</li>
+            </ul>
+          </div>
+          <div class="project-card" role="button" tabindex="0" data-category="摄像仪" data-role="独立设计" data-title="无线对讲摄像仪" data-detail="基于海康威视机芯与多倍通无线AP改造为无线传输，解决布线难题。独立设计转接电路板与嵌入式软件，实现协议转换与处理，扩展功放、麦克风、灯光与雨刷控制。">
+            <span class="project-badge">独立设计</span>
+            <h3>无线对讲摄像仪</h3>
+            <ul>
+              <li>无线传输改造</li>
+              <li>协议转换与外设扩展</li>
+            </ul>
+          </div>
+          <div class="project-card" role="button" tabindex="0" data-category="摄像仪" data-role="独立设计" data-title="矿用本安型光纤摄像仪（微型）" data-detail="设计微型数据转接板，将海康威视机芯数据通过光纤传输至交换机，实现高清视频远传。开发嵌入式程序支持Pelco-D协议，控制灯光、雨刷等外设，并集成功放与麦克风。">
+            <span class="project-badge">独立设计</span>
+            <h3>矿用本安型光纤摄像仪（微型）</h3>
+            <ul>
+              <li>光纤远传</li>
+              <li>Pelco-D控制</li>
+            </ul>
+          </div>
+          <div class="project-card" role="button" tabindex="0" data-category="传感器" data-role="独立开发" data-title="矿用设备启停传感器" data-detail="基于电磁感应原理，通过线圈感应设备电缆电流变化产生磁场，经放大比较电路输出开关量信号。设计阈值可调比较电路并驱动LED报警，结构紧凑、抗干扰强。">
+            <span class="project-badge">独立开发</span>
+            <h3>矿用设备启停传感器</h3>
+            <ul>
+              <li>电磁感应检测</li>
+              <li>阈值可调报警</li>
+            </ul>
+          </div>
+          <div class="project-card" role="button" tabindex="0" data-category="传感器" data-role="独立开发" data-title="电极式堆煤传感器" data-detail="利用电极与接地线之间电阻变化检测煤堆堆积，当煤接触电极使阻值低于阈值时输出开关量报警信号。电路简单可靠，适用于恶劣煤矿环境。">
+            <span class="project-badge">独立开发</span>
+            <h3>电极式堆煤传感器</h3>
+            <ul>
+              <li>电阻变化检测</li>
+              <li>开关量报警输出</li>
+            </ul>
+          </div>
+          <div class="project-card" role="button" tabindex="0" data-category="控制器" data-role="硬件&嵌入式" data-title="矿用电源控制器" data-detail="基于STM32F103与HLW8032电能计量芯片，实时采集多路交流电压、电流并通过继电器控制通断。开发LCD界面显示电参数，支持Modbus RTU/TCP远程监控，提供本地按键、PLC与上位机控制。">
+            <span class="project-badge">硬件&嵌入式</span>
+            <h3>矿用电源控制器</h3>
+            <ul>
+              <li>多路计量与控制</li>
+              <li>Modbus RTU/TCP</li>
+            </ul>
+          </div>
+          <div class="project-card" role="button" tabindex="0" data-category="摄像仪" data-role="硬件设计" data-title="图像处理摄像仪（音频增强）" data-detail="在海康威视摄像头方案上增加大功率功放电路并集成扬声器，使摄像仪具备远距离音频播放能力。负责摄像机选型与功放模块硬件设计，并满足矿用本安防爆标准。">
+            <span class="project-badge">硬件设计</span>
+            <h3>图像处理摄像仪（音频增强）</h3>
+            <ul>
+              <li>功放与扬声器集成</li>
+              <li>本安防爆要求</li>
+            </ul>
+          </div>
+          <div class="project-card" role="button" tabindex="0" data-category="报警器" data-role="独立开发" data-title="声光报警器" data-detail="基于开关量触发的声光报警器，触发后语音播放模块发出报警音，红绿LED交替闪烁。独立完成器件选型、原理图设计与PCB布局，体积小巧，可靠性高。">
+            <span class="project-badge">独立开发</span>
+            <h3>声光报警器</h3>
+            <ul>
+              <li>语音播放+灯光报警</li>
+              <li>紧凑可靠结构</li>
+            </ul>
+          </div>
+          <div class="project-card" role="button" tabindex="0" data-category="传感器" data-role="独立开发" data-title="多参气体传感器" data-detail="基于STM32及催化燃烧、电化学等气体传感器，采集多种气体浓度，实时显示并具备阈值报警功能。设计信号调理电路与数据校准算法，支持RS485输出接入矿井监控系统。">
+            <span class="project-badge">独立开发</span>
+            <h3>多参气体传感器</h3>
+            <ul>
+              <li>多气体采集与报警</li>
+              <li>RS485数据输出</li>
+            </ul>
+          </div>
+          <div class="project-card" role="button" tabindex="0" data-category="电源" data-role="独立开发" data-title="自适应锂电池电源管理" data-detail="基于STM32与CN3765设计自适应锂电池充放电电路，上电自动识别2~7节电池并智能匹配参数。采用FATFS存储运行数据，USB读取记录，基于LVGL开发GUI并集成Modbus RTU/TCP通信实现远程监控与报警输出。">
+            <span class="project-badge">独立开发</span>
+            <h3>自适应锂电池电源管理</h3>
+            <ul>
+              <li>自动识别电池节数</li>
+              <li>FATFS+LVGL</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <!-- 核心技能 -->
+      <section id="skills" tabindex="0">
+        <h2>核心技能</h2>
+        <ul>
+          <li><strong>嵌入式开发：</strong>STM32、STC12，熟悉Modbus RTU/TCP、RS485与Pelco-D协议。</li>
+          <li><strong>硬件设计：</strong>原理图设计、PCB布局、器件选型与BOM整理，关注可靠性与防爆标准。</li>
+          <li><strong>系统联调：</strong>样机测试与优化，配合生产与工艺文件整理，推进落地。</li>
+          <li><strong>软件能力：</strong>FATFS文件系统、LVGL界面开发、LCD显示与按键交互。</li>
+        </ul>
+        <div class="skill-tags">
+          <span class="tag">Altium Designer</span>
+          <span class="tag">Keil</span>
+          <span class="tag">STM32CubeMX</span>
+          <span class="tag">J-Link</span>
+          <span class="tag">示波器/万用表</span>
+        </div>
+      </section>
+      <!-- 工作与项目时间轴 -->
+      <section id="timeline" tabindex="0">
+        <h2>工作与项目时间轴</h2>
+        <ul>
+          <li>2019.09 - 2023.06：中国矿业大学徐海学院电子科学与技术本科。</li>
+          <li>2023.06 - 2024.08：徐州宏远通信科技有限公司，电子工程师（研发）。</li>
+          <li>2024.08 - 至今：徐州凌创智能科技发展有限公司，电子工程师（研发）。</li>
+          <li>2023 - 至今：完成矿用电源、传感器、摄像仪、控制器与报警器等项目交付。</li>
+        </ul>
+      </section>
+      <!-- 留言板 -->
+      <section id="message" tabindex="0">
+        <h2>留言板</h2>
+        <form class="message-form" id="messageForm" aria-label="留言板表单">
+          <input type="text" id="msgName" placeholder="姓名" required>
+          <input type="email" id="msgEmail" placeholder="邮箱" required>
+          <textarea id="msgContent" rows="4" placeholder="留言内容" required></textarea>
+          <button type="submit">提交留言</button>
+        </form>
+        <div id="messageList" class="message-list"></div>
+      </section>
+      <!-- 动态更新 / 博客 -->
+      <section id="blog" tabindex="0">
+        <h2>技术亮点</h2>
+        <div class="highlight-grid">
+          <div class="highlight-card">
+            <h3>防爆标准适配</h3>
+            <p>具备GB3836防爆要求的电源改造与结构协同经验。</p>
+          </div>
+          <div class="highlight-card">
+            <h3>远程监控与通信</h3>
+            <p>在多项目中集成RS485与Modbus RTU/TCP，支持远程读取与控制。</p>
+          </div>
+          <div class="highlight-card">
+            <h3>数据记录与UI</h3>
+            <p>通过FATFS记录运行数据，使用LVGL实现电源参数可视化。</p>
+          </div>
+        </div>
+      </section>
+      <!-- 联系方式（放在最后） -->
+      <section id="contact" tabindex="0">
+        <h2>联系方式</h2>
+        <button id="contactToggle">联系我</button>
+        <div id="contactDetails" style="display:none; margin-top:10px;">
+          <p><strong>邮箱：</strong><a href="mailto:1743504643@qq.com">1743504643@qq.com</a></p>
+          <p><strong>电话：</strong>18586692247</p>
+          <div class="action-buttons" style="justify-content:flex-start;">
+            <button class="action-btn" type="button" data-copy="1743504643@qq.com">复制邮箱</button>
+            <button class="action-btn" type="button" data-copy="18586692247">复制电话</button>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer tabindex="0" style="text-align: center; padding: 20px 0;">
+      &copy; 2026 罗小卫. 保留所有权利。
+    </footer>
+  </div>
+  <!-- 模态框（用于显示项目详情） -->
+  <div id="projectModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-hidden="true" tabindex="-1">
+    <div class="modal-content">
+      <span class="close" id="modalClose" aria-label="关闭模态框" tabindex="0">&times;</span>
+      <h2 id="modal-title"></h2>
+      <p id="modal-detail"></p>
+    </div>
+  </div>
+  <!-- 回到顶部按钮 -->
+  <button id="backToTop" aria-label="回到顶部">&#8679;</button>
+
+  <!-- 内联 JavaScript -->
+  <script>
+    // Firebase 配置（请替换为你自己的配置）
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    const useFirebase = Object.values(firebaseConfig).every(value => value && !String(value).includes("YOUR_"));
+    let db = null;
+    let auth = null;
+    if (useFirebase && window.firebase) {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      auth = firebase.auth();
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      // 后台管理模式判断
+      if(urlParams.get('admin') === 'true'){
+        document.getElementById('adminPanel').style.display = 'block';
+        document.getElementById('mainContent').style.display = 'none';
+        document.getElementById('mainNav').style.display = 'none';
+      } else {
+        document.getElementById('adminPanel').style.display = 'none';
+      }
+
+      // 移除预加载动画
+      document.getElementById("preloader").style.display = "none";
+
+      // 初始化粒子背景
+      if (window.particlesJS) {
+        particlesJS("particles-js", {
+          particles: {
+            number: { value: 80, density: { enable: true, value_area: 800 } },
+            color: { value: "#00d1ff" },
+            shape: { type: "circle" },
+            opacity: { value: 0.5, random: true },
+            size: { value: 3, random: true },
+            line_linked: { enable: true, distance: 150, color: "#00d1ff", opacity: 0.4, width: 1 },
+            move: { enable: true, speed: 2, random: true, out_mode: "out" }
+          },
+          interactivity: {
+            detect_on: "canvas",
+            events: {
+              onhover: { enable: true, mode: "grab" },
+              onclick: { enable: true, mode: "push" }
+            },
+            modes: {
+              grab: { distance: 140, line_linked: { opacity: 1 } },
+              push: { particles_nb: 4 }
+            }
+          }
+        });
+      }
+
+      // 主题切换及持久化
+      const themeToggle = document.getElementById("themeToggle");
+      function setTheme(theme) {
+        document.body.classList.toggle("light-mode", theme === "light");
+        localStorage.setItem("theme", theme);
+      }
+      themeToggle.addEventListener("click", function() {
+        const newTheme = document.body.classList.contains("light-mode") ? "dark" : "light";
+        setTheme(newTheme);
+      });
+      setTheme(localStorage.getItem("theme") || "dark");
+
+      document.querySelectorAll("[data-copy]").forEach(btn => {
+        btn.addEventListener("click", function() {
+          const text = this.getAttribute("data-copy");
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => {
+              alert("已复制");
+            }).catch(() => {
+              alert("复制失败，请手动复制");
+            });
+            return;
+          }
+          const temp = document.createElement("input");
+          temp.value = text;
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand("copy");
+          document.body.removeChild(temp);
+          alert("已复制");
+        });
+      });
+
+      // 用户留言提交：保存留言到 Firebase Firestore
+      const messageList = document.getElementById("messageList");
+      function renderLocalMessages(messages) {
+        if (!messageList) return;
+        messageList.innerHTML = "";
+        messages.slice(0, 5).forEach(item => {
+          const wrap = document.createElement("div");
+          wrap.className = "message-item";
+          wrap.innerHTML = `<h4>${item.name}</h4><div>${item.content}</div>`;
+          messageList.appendChild(wrap);
+        });
+      }
+      const localMessages = JSON.parse(localStorage.getItem("messages") || "[]");
+      renderLocalMessages(localMessages);
+
+      document.getElementById("messageForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        const name = document.getElementById("msgName").value;
+        const email = document.getElementById("msgEmail").value;
+        const content = document.getElementById("msgContent").value;
+        const timestamp = new Date();
+        if (useFirebase && db) {
+          db.collection("messages").add({
+            name, email, content, timestamp
+          }).then(() => {
+            alert("留言提交成功！");
+            this.reset();
+          }).catch(() => {
+            alert("留言提交失败，请稍后重试");
+          });
+          return;
+        }
+        const messages = JSON.parse(localStorage.getItem("messages") || "[]");
+        messages.unshift({ name, email, content, timestamp: timestamp.toISOString() });
+        localStorage.setItem("messages", JSON.stringify(messages));
+        renderLocalMessages(messages);
+        alert("留言已保存到本地");
+        this.reset();
+      });
+
+      // 模态框功能：绑定项目卡片点击事件
+      let lastFocusedElement;
+      const modal = document.getElementById("projectModal");
+      const modalTitle = document.getElementById("modal-title");
+      const modalDetail = document.getElementById("modal-detail");
+      const modalClose = document.getElementById("modalClose");
+      document.querySelectorAll(".project-card").forEach(card => {
+        card.addEventListener("click", function() {
+          lastFocusedElement = document.activeElement;
+          modalTitle.textContent = this.dataset.title;
+          modalDetail.textContent = this.dataset.detail;
+          modal.setAttribute("aria-hidden", "false");
+          modalClose.focus();
+        });
+      });
+      function closeModal() {
+        modal.setAttribute("aria-hidden", "true");
+        if(lastFocusedElement) lastFocusedElement.focus();
+      }
+      modalClose.addEventListener("click", closeModal);
+      modal.addEventListener("click", function(e) {
+        if(e.target === modal) closeModal();
+      });
+      document.addEventListener("keydown", function(e) {
+        if(e.key === "Escape") closeModal();
+      });
+
+      // 项目经历过滤功能
+      const filterButtons = document.querySelectorAll(".filter-btn");
+      const projectCards = document.querySelectorAll(".project-card");
+      const projectSearch = document.getElementById("projectSearch");
+      const roleToggle = document.getElementById("roleToggle");
+      let activeFilter = "all";
+      function applyProjectFilters() {
+        const keyword = projectSearch.value.trim().toLowerCase();
+        projectCards.forEach(card => {
+          const matchCategory = activeFilter === "all" || card.dataset.category === activeFilter;
+          const matchRole = !roleToggle.checked || (card.dataset.role || "").includes("独立");
+          const text = `${card.dataset.title} ${card.dataset.detail} ${card.dataset.category} ${card.dataset.role}`.toLowerCase();
+          const matchKeyword = !keyword || text.includes(keyword);
+          card.style.display = matchCategory && matchRole && matchKeyword ? "block" : "none";
+        });
+      }
+      filterButtons.forEach(btn => {
+        btn.addEventListener("click", function() {
+          filterButtons.forEach(b => b.classList.remove("active"));
+          this.classList.add("active");
+          activeFilter = this.dataset.filter;
+          applyProjectFilters();
+        });
+      });
+      projectSearch.addEventListener("input", applyProjectFilters);
+      roleToggle.addEventListener("change", applyProjectFilters);
+      applyProjectFilters();
+
+      // 回到顶部按钮
+      const backToTop = document.getElementById("backToTop");
+      window.addEventListener("scroll", function() {
+        backToTop.style.display = window.scrollY > 300 ? "block" : "none";
+      });
+      backToTop.addEventListener("click", function() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      // 导航链接高亮更新
+      const navLinks = document.querySelectorAll(".nav-link");
+      window.addEventListener("scroll", function() {
+        let fromTop = window.scrollY + 80;
+        navLinks.forEach(link => {
+          const section = document.querySelector(link.getAttribute("href"));
+          if(section && section.offsetTop <= fromTop && (section.offsetTop + section.offsetHeight) > fromTop) {
+            link.classList.add("active");
+          } else {
+            link.classList.remove("active");
+          }
+        });
+      });
+
+      const contactToggle = document.getElementById("contactToggle");
+      const contactDetails = document.getElementById("contactDetails");
+      contactToggle.addEventListener("click", function() {
+        if(contactDetails.style.display === "none" || contactDetails.style.display === "") {
+          contactDetails.style.display = "block";
+        } else {
+          contactDetails.style.display = "none";
+        }
+      });
+
+      document.addEventListener("keydown", function(e) {
+        if(e.key === "Enter" && document.activeElement.getAttribute("role") === "button") {
+          document.activeElement.click();
+        }
+      });
+
+      if(urlParams.get('admin') === 'true'){
+        document.getElementById('adminPanel').style.display = 'block';
+        document.getElementById('mainContent').style.display = 'none';
+        document.getElementById('mainNav').style.display = 'none';
+        if (useFirebase && auth) {
+          document.getElementById("adminLoginBtn").addEventListener("click", function(){
+            const email = document.getElementById("adminEmail").value;
+            const password = document.getElementById("adminPassword").value;
+            auth.signInWithEmailAndPassword(email, password)
+              .then(() => {
+                document.getElementById("adminLogin").style.display = "none";
+                document.getElementById("adminMessages").style.display = "block";
+                db.collection("messages").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+                  const tableBody = document.getElementById("messagesTableBody");
+                  tableBody.innerHTML = "";
+                  snapshot.forEach(doc => {
+                    const msg = doc.data();
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                      <td>${msg.name}</td>
+                      <td>${msg.email}</td>
+                      <td>${msg.content}</td>
+                      <td>${new Date(msg.timestamp.seconds * 1000).toLocaleString()}</td>
+                    `;
+                    tableBody.appendChild(tr);
+                  });
+                });
+              })
+              .catch(error => {
+                alert("登录失败：" + error.message);
+              });
+          });
+        } else {
+          document.getElementById("adminLogin").style.display = "none";
+          document.getElementById("adminMessages").style.display = "block";
+          const messages = JSON.parse(localStorage.getItem("messages") || "[]");
+          const tableBody = document.getElementById("messagesTableBody");
+          tableBody.innerHTML = "";
+          messages.forEach(msg => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${msg.name}</td>
+              <td>${msg.email}</td>
+              <td>${msg.content}</td>
+              <td>${new Date(msg.timestamp).toLocaleString()}</td>
+            `;
+            tableBody.appendChild(tr);
+          });
+        }
+      }
+      if ('serviceWorker' in navigator) {
+        const swCode = `
+          const CACHE_NAME = 'my-cache-v1';
+          const urlsToCache = ['/'];
+          self.addEventListener('install', event => {
+            event.waitUntil(
+              caches.open(CACHE_NAME)
+                .then(cache => cache.addAll(urlsToCache))
+            );
+          });
+          self.addEventListener('fetch', event => {
+            event.respondWith(
+              caches.match(event.request)
+                .then(response => response || fetch(event.request))
+            );
+          });
+        `;
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        const swURL = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swURL)
+          .then(reg => console.log('Service Worker 注册成功:', reg))
+          .catch(err => console.error('Service Worker 注册失败:', err));
+      }
+    });
+  </script>
+  <!-- 为了使字体图标正常显示 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" defer></script>
+</body>
+</html>
